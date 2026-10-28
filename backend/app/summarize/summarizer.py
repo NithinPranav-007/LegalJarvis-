@@ -83,7 +83,7 @@ class StructuredSummarizer:
         if self.llm.has_credentials:
             if self.llm.provider_name == "fake":
                 provider = self.llm.get_provider()
-                canned = getattr(provider, "_canned_response", "")
+                canned = getattr(provider, "_canned_response", "") or ""
                 if any(h in canned.upper() for h in ["FACTS", "HOLDING", "REASONING"]):
                     try:
                         summary_raw = self._generate_summary_llm(chunks)

@@ -4,6 +4,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from app.verify.support import normalize_citations
+
 RE_CITATION_MARKER = re.compile(r"\[C(\d+)\]")
 
 
@@ -28,7 +30,8 @@ def verify_citation_existence(
     explicitly provided in the context.
     """
     allowed_set = set(allowed_markers)
-    found_matches = RE_CITATION_MARKER.finditer(text)
+    norm_text = normalize_citations(text)
+    found_matches = RE_CITATION_MARKER.finditer(norm_text)
 
     valid: list[str] = []
     invalid: list[str] = []

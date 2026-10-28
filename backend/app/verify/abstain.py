@@ -7,6 +7,7 @@ from app.retrieval.lexical import SearchResultItem
 from app.verify.existence import verify_citation_existence
 from app.verify.support import (
     SentenceSupportResult,
+    normalize_citations,
     split_sentences_with_citations,
     verify_sentence_support,
 )
@@ -50,7 +51,7 @@ def verify_and_filter_answer(
     min_supported_fraction: float = 0.60,
 ) -> VerificationResult:
     """Enforce citation existence, claim verification, sentence pruning, and abstention."""
-    clean_ans = answer.strip()
+    clean_ans = normalize_citations(answer.strip()) if answer else ""
     if not clean_ans:
         return VerificationResult(
             raw_answer="",
@@ -61,7 +62,7 @@ def verify_and_filter_answer(
         )
 
     # 1. Verify existence of all cited markers
-    allowed_markers = set(citation_map.keys())
+    allowed_markers = set(citation_map.keys()) if citation_map else set()
     existence = verify_citation_existence(clean_ans, allowed_markers)
 
     # 2. Split answer into individual sentences
@@ -97,9 +98,11 @@ def verify_and_filter_answer(
         # Look up text for valid markers
         cited_passages: list[str] = []
         for marker in sent_existence.valid_markers:
-            item = citation_map.get(marker)
+            item = citation_map.get(marker) if citation_map else None
             if item:
-                cited_passages.append(item.title + " " + item.snippet)
+                snippet = getattr(item, "snippet", "") or getattr(item, "text", "")
+                title = getattr(item, "title", "")
+                cited_passages.append(f"{title} {snippet}".strip())
 
         res = verify_sentence_support(
             sentence=sentence,
@@ -128,6 +131,8 @@ def verify_and_filter_answer(
             reason_parts.append(
                 f"supported claim fraction {supported_fraction:.2f} < threshold {min_supported_fraction:.2f}"
             )
+        elif supported_count == 0:
+            reason_parts.append("zero claims supported by cited authorities")
 
         abstention_reason = f"Verification failed: {', '.join(reason_parts)}."
         verified_answer = (
