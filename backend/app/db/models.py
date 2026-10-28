@@ -345,7 +345,7 @@ class User(Base):
     )
 
     __table_args__ = (
-        CheckConstraint("role IN ('researcher','reviewer','admin')", name="ck_user_role"),
+        CheckConstraint("role IN ('researcher','reviewer','admin','citizen')", name="ck_user_role"),
     )
 
     user_documents: Mapped[list["UserDocument"]] = relationship(
