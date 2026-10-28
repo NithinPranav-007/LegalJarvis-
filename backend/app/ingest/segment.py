@@ -169,9 +169,10 @@ def segment_document(
             current_segment_type = detected
 
         # Verify offset invariant before creating chunk
-        assert (
-            text[start_char:end_char] == para_text
-        ), f"Offset mismatch at para {para_no}: {repr(text[start_char:end_char])} != {repr(para_text)}"
+        if text[start_char:end_char] != para_text:
+            raise ValueError(
+                f"Offset mismatch at para {para_no}: {repr(text[start_char:end_char])} != {repr(para_text)}"
+            )
 
         chunk = ChunkRecord(
             para_no=para_no,

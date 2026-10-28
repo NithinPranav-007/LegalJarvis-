@@ -3,7 +3,6 @@
 import re
 import unicodedata
 
-
 # Regex patterns for cleaning legal judgment texts
 RE_HYPHEN_NEWLINE = re.compile(r"(\b[a-zA-Z]{2,})-\s*\n\s*([a-zA-Z]{2,}\b)")
 RE_MULTI_NEWLINE = re.compile(r"\n{3,}")

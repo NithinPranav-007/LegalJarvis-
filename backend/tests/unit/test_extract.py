@@ -1,6 +1,7 @@
 """Unit tests for text extraction, cleaning, and quality scoring (Task T-05 / T-FR02)."""
 
 from pathlib import Path
+
 from app.ingest.clean import (
     clean_judgment_text,
     compute_extraction_quality,
