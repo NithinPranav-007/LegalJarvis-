@@ -26,6 +26,8 @@ function Show-Help {
     Write-Host "  security      - Run security scans"
 }
 
+$env:PYTHONPATH = "backend;" + $env:PYTHONPATH
+
 switch ($Target.ToLower()) {
     "setup" {
         python -m pip install --upgrade pip
@@ -48,7 +50,10 @@ switch ($Target.ToLower()) {
         & "scripts\ops\smoke.ps1"
     }
     "ingest" {
-        python -m backend.app.ingest.cli ingest $Args
+        python -m app.ingest.cli ingest $Args
+    }
+    "embed" {
+        python -m app.ingest.cli embed $Args
     }
     "run-backend" {
         uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000 --reload

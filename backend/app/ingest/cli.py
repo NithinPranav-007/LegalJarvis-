@@ -4,8 +4,23 @@ import typer
 
 from app.db.session import sync_session_maker
 from app.ingest.download import ingest_supreme_court_year
+from app.ingest.embed import embed_unindexed_chunks, get_embedder
 
 app = typer.Typer(help="LegalJarvis Ingestion and Data Management CLI")
+
+
+@app.command()
+def embed(
+    batch_size: int = typer.Option(64, "--batch-size", "-b", help="Batch size for embedding generation"),
+) -> None:
+    """Generate dense vector embeddings for unindexed chunks."""
+    typer.echo(f"Starting batch embedding: batch_size={batch_size}")
+    embedder = get_embedder()
+    typer.echo(f"Using embedder: {embedder.__class__.__name__} (dim={embedder.dimension})")
+
+    with sync_session_maker() as db:
+        count = embed_unindexed_chunks(db=db, batch_size=batch_size, embedder=embedder)
+        typer.echo(f"Batch embedding complete: {count} chunks embedded and persisted.")
 
 
 @app.command()

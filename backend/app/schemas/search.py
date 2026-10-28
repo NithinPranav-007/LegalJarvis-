@@ -1,10 +1,17 @@
 """Schemas for search endpoints (Task T-07 / FR-04)."""
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class SearchRequest(BaseModel):
     query: str = Field(..., min_length=2, max_length=1000, description="Natural language search query")
+    mode: Literal["hybrid", "lexical", "dense"] = Field(
+        default="hybrid",
+        description="Search mode: hybrid (RRF + rerank), lexical (BM25/FTS), or dense (vector similarity)",
+    )
+    rerank: bool = Field(default=True, description="Whether to apply cross-encoder reranking")
     court_codes: list[str] | None = Field(default=None, description="Optional court filter codes (e.g. ['sc', 'delhi_hc'])")
     year_from: int | None = Field(default=None, ge=1950, description="Earliest judgment year")
     year_to: int | None = Field(default=None, le=2030, description="Latest judgment year")

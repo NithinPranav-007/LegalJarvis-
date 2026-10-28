@@ -8,6 +8,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.api.search import get_sync_db
 from app.db.models import Base, Chunk, Court, DatasetSnapshot, Document, IngestionRun
+from app.ingest.embed import DeterministicHashEmbedder
 from app.main import app
 
 
@@ -63,13 +64,18 @@ def populated_db() -> Session:
     session.add_all([doc1, doc2])
     session.commit()
 
+    embedder = DeterministicHashEmbedder()
+    t1 = "A suit for specific performance was filed seeking enforcement of the agreement."
+    t2 = "The levy of service tax on user development fee collected under the Airports Authority Act."
+
     chunk1 = Chunk(
         document_id=doc1.id,
         para_no=1,
         segment_type="facts",
         start_char=0,
         end_char=80,
-        text="A suit for specific performance was filed seeking enforcement of the agreement.",
+        text=t1,
+        embedding=embedder.embed_text(t1),
     )
     chunk2 = Chunk(
         document_id=doc2.id,
@@ -77,7 +83,8 @@ def populated_db() -> Session:
         segment_type="reasoning",
         start_char=0,
         end_char=90,
-        text="The levy of service tax on user development fee collected under the Airports Authority Act.",
+        text=t2,
+        embedding=embedder.embed_text(t2),
     )
     session.add_all([chunk1, chunk2])
     session.commit()
@@ -96,24 +103,39 @@ async def test_search_api_endpoint(populated_db: Session) -> None:
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
-        # Search for specific performance
+        # 1. Default hybrid search
         resp = await client.post(
             "/v1/search",
-            json={"query": "specific performance"},
+            json={"query": "specific performance", "mode": "hybrid", "rerank": True},
         )
         assert resp.status_code == 200
         data = resp.json()
         assert data["query"] == "specific performance"
         assert data["total"] >= 1
-        assert len(data["results"]) >= 1
-
         first_hit = data["results"][0]
         assert "Eldeco Housing" in first_hit["title"]
         assert first_hit["court"] == "Supreme Court of India"
         assert first_hit["para_no"] == 1
         assert "specific performance" in first_hit["snippet"].lower()
-        assert "attribution" in data
         assert "Dattam Labs" in data["attribution"]
+
+        # 2. Dense search mode
+        dense_resp = await client.post(
+            "/v1/search",
+            json={"query": "service tax airport fee", "mode": "dense"},
+        )
+        assert dense_resp.status_code == 200
+        dense_data = dense_resp.json()
+        assert dense_data["total"] >= 1
+        assert "Central GST" in dense_data["results"][0]["title"]
+
+        # 3. Lexical search mode
+        lex_resp = await client.post(
+            "/v1/search",
+            json={"query": "specific performance", "mode": "lexical"},
+        )
+        assert lex_resp.status_code == 200
+        assert lex_resp.json()["total"] >= 1
 
     app.dependency_overrides.clear()
 

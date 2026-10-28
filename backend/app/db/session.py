@@ -21,26 +21,21 @@ class Base(DeclarativeBase):
 
 # Async engine for FastAPI requests
 DATABASE_URL = os.getenv("DATABASE_URL", settings.DATABASE_URL)
-SYNC_DATABASE_URL = os.getenv("SYNC_DATABASE_URL", settings.SYNC_DATABASE_URL)
-
-# Configure async engine
-async_engine = create_async_engine(
-    DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_pre_ping=True,
-)
-
-async_session_maker = async_sessionmaker(
-    async_engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
-
 # Synchronous engine for Alembic migrations and CLI jobs
+if os.getenv("SYNC_DATABASE_URL"):
+    SYNC_DATABASE_URL = os.environ["SYNC_DATABASE_URL"]
+elif DATABASE_URL.startswith("sqlite"):
+    SYNC_DATABASE_URL = DATABASE_URL
+else:
+    SYNC_DATABASE_URL = settings.SYNC_DATABASE_URL
+
+sync_connect_args = {"check_same_thread": False} if SYNC_DATABASE_URL.startswith("sqlite") else {}
+
 sync_engine = create_engine(
     SYNC_DATABASE_URL,
     echo=settings.DEBUG,
     pool_pre_ping=True,
+    connect_args=sync_connect_args,
 )
 
 sync_session_maker = sessionmaker(

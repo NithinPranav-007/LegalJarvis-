@@ -39,7 +39,7 @@ class SearchResultItem:
         self.para_no = para_no
         self.segment_type = segment_type
         self.snippet = snippet
-        self.score = round(score, 4)
+        self.score = round(score, 6)
         self.attribution = attribution
 
     def to_dict(self) -> dict[str, Any]:

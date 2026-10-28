@@ -1,4 +1,4 @@
-.PHONY: help setup lint test eval smoke ingest run-backend run-frontend backup restore data-probe security clean
+.PHONY: help setup lint test eval smoke ingest embed run-backend run-frontend backup restore data-probe security clean
 
 PYTHON ?= python
 PIP ?= pip
@@ -42,6 +42,9 @@ smoke:
 
 ingest:
 	$(PYTHON) -m app.ingest.cli ingest --source $(SOURCE) --years $(YEARS)
+
+embed:
+	$(PYTHON) -m app.ingest.cli embed
 
 run-backend:
 	uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000 --reload
