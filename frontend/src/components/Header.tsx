@@ -8,7 +8,6 @@ import {
   ShieldCheck,
   ArrowRightLeft,
   X,
-  ExternalLink,
 } from "lucide-react";
 
 export type NavTab = "ask" | "search" | "case" | "history" | "reviewer";

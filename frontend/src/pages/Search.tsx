@@ -10,7 +10,6 @@ import {
   Building,
   Copy,
   Check,
-  ArrowRight,
 } from "lucide-react";
 import { api } from "../api/client";
 import { SearchItem } from "../types";
