@@ -20,7 +20,7 @@ Status values:
 | **FR-03** | Structure-aware segmentation | P0 | `backend/app/ingest/segment.py` | `backend/tests/unit/test_segment.py` (T-FR03 offsets test) | implemented |
 | **FR-04** | Hybrid search with filters | P0 | `backend/app/retrieval/` (`lexical.py`, `dense.py`, `fusion.py`, `rerank.py`, `hybrid.py`, `filters.py`), `api/search.py` | `backend/tests/integration/test_retrieval.py` (T-FR04), `tests/api/test_search.py` | implemented |
 | **FR-05** | Cited question answering | P0 | `backend/app/qa/` (`orchestrator.py`, `query_analysis.py`, `context_builder.py`), `prompts/qa_v1.txt`, `api/qa.py` | `backend/tests/integration/test_qa.py` (T-FR05) | implemented |
-| **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | not started |
+| **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | implemented |
 | **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/cases.py`, `backend/app/api/chunks.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/viewer.spec.ts` (T-FR07) | not started |
 | **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
 | **FR-09** | Structured summarisation | P1 | `backend/app/summarize/`, `prompts/summary_v1.txt` | `backend/tests/unit/test_summarize.py` (T-FR09) | not started |
@@ -41,7 +41,7 @@ Status values:
 | Requirement ID | Dimension | Priority | Target / Pass Condition | Planned Module(s) | Planned Test(s) | Status |
 |---|---|---|---|---|---|---|
 | **NFR-PERF** | Performance | P0 | Search p95 <= 2s; Q&A p95 <= 20s; stream first token <= 5s | `backend/app/retrieval/`, `backend/app/qa/` | `tests/perf/locustfile.py` (T-NFR-PERF) | not started |
-| **NFR-ACC** | Accuracy | P0 | Citation existence 100%; supported-claim rate measured | `backend/app/verify/` | `backend/tests/unit/test_verify.py` (T-FR06) | not started |
+| **NFR-ACC** | Accuracy | P0 | Citation existence 100%; supported-claim rate measured | `backend/app/verify/` | `backend/tests/unit/test_verify.py` (T-FR06) | implemented |
 | **NFR-REL** | Reliability | P0 | Graceful degradation; `/health` endpoint; generator-down fallback | `backend/app/api/health.py`, `backend/app/qa/orchestrator.py` | `backend/tests/integration/test_degradation.py` | not started |
 | **NFR-SEC** | Security | P0 | OWASP Top 10 compliant; zero secrets in Git; parameterised SQL | `backend/app/core/security.py`, `.env.example`, CI | `scripts/ops/check_secrets.py`, `bandit` | in progress |
 | **NFR-PRIV** | Privacy | P0 | Private document cross-user isolation closed; RLS enabled | `backend/app/db/models.py`, `backend/app/api/documents.py` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |

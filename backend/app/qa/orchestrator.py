@@ -12,6 +12,7 @@ from app.qa.context_builder import build_qa_context
 from app.qa.query_analysis import analyze_query
 from app.retrieval.hybrid import search_hybrid
 from app.schemas.qa import QACitation, QAResponse
+from app.verify.abstain import verify_and_filter_answer
 
 logger = logging.getLogger(__name__)
 
@@ -178,8 +179,30 @@ class QAOrchestrator:
                 generation_status="abstained",
             )
 
-        # 9. Citation Resolution
-        cited_markers = set(f"[C{m.group(1)}]" for m in RE_CITATION_MARKER.finditer(raw_answer))
+        # 9. Citation Verification & Claim Support Pruning (Task T-12 / FR-06)
+        verification = verify_and_filter_answer(
+            answer=raw_answer,
+            citation_map=context.citation_map,
+            overlap_threshold=0.25,
+            min_supported_fraction=0.60,
+        )
+
+        if verification.abstained:
+            return QAResponse(
+                question=clean_q,
+                answer=verification.verified_answer,
+                citations=[],
+                abstained=True,
+                abstention_reason=verification.abstention_reason,
+                criminal_transition_notice=analysis.notice_text,
+                disclaimer=settings.LEGAL_DISCLAIMER,
+                generation_status="abstained",
+            )
+
+        final_answer = verification.verified_answer
+
+        # 10. Citation Resolution
+        cited_markers = set(f"[C{m.group(1)}]" for m in RE_CITATION_MARKER.finditer(final_answer))
         active_citations: list[QACitation] = []
 
         for marker, item in context.citation_map.items():
@@ -200,7 +223,7 @@ class QAOrchestrator:
 
         return QAResponse(
             question=clean_q,
-            answer=raw_answer,
+            answer=final_answer,
             citations=active_citations,
             abstained=False,
             abstention_reason=None,
