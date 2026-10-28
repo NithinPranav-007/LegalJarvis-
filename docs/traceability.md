@@ -49,6 +49,6 @@ Status values:
 | **NFR-A11Y** | Accessibility | P1 | WCAG 2.1 AA for core flows; visible focus; axe-core checks | `frontend/src/` | `frontend/tests/e2e/a11y.spec.ts` (T-NFR-A11Y) | not started |
 | **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | in progress |
 | **NFR-FAULT** | Fault Tolerance | P0 | Resumable ingestion; all ingestion stages idempotent | `backend/app/ingest/` | `backend/tests/integration/test_ingest_idempotency.py` | not started |
-| **NFR-INTEG** | Data Integrity | P0 | Full provenance: chunk -> document -> raw file -> sha256 -> snapshot | `backend/app/db/models.py`, `backend/app/ingest/` | `backend/tests/db/test_provenance.py` (T-DATA) | not started |
+| **NFR-INTEG** | Data Integrity | P0 | Full provenance: chunk -> document -> raw file -> sha256 -> snapshot | `backend/app/db/models.py`, `backend/app/ingest/` | `backend/tests/db/test_models.py` | in progress |
 | **NFR-LOG** | Logging & Metrics | P1 | Structured JSON logs; request IDs; `/metrics` in Prometheus format | `backend/app/core/logging.py`, `backend/app/api/metrics.py` | `backend/tests/api/test_metrics.py` | not started |
 | **NFR-DEP** | Deployment & Recovery | P0 | Clean reproduction from README; smoke test; backup/restore | `docker-compose.yml`, `scripts/ops/` | `scripts/ops/smoke.sh`, `scripts/ops/backup.sh`, `scripts/ops/restore.sh` | not started |
