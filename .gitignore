@@ -1,7 +1,5 @@
 # Data and models (strictly never commit datasets, dumps, or model weights)
-data/raw/
-data/interim/
-data/processed/
+data/
 models/
 *.tar
 *.tar.gz

@@ -5,7 +5,6 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.search import get_sync_db
 from app.core.config import settings
 from app.core.security import (
     create_access_token,
@@ -14,6 +13,7 @@ from app.core.security import (
     verify_password,
 )
 from app.db.models import User
+from app.db.session import get_sync_db
 from app.schemas.auth import (
     TokenResponse,
     UserLoginRequest,
@@ -62,6 +62,22 @@ def get_current_user(
         )
 
     return user
+
+
+def get_optional_current_user(
+    auth: HTTPAuthorizationCredentials | None = Depends(security_bearer),
+    db: Session = Depends(get_sync_db),
+) -> User | None:
+    """Optional dependency extracting user from Bearer JWT without raising 401 if unauthenticated."""
+    if not auth or not auth.credentials:
+        return None
+    payload = decode_access_token(auth.credentials)
+    if not payload:
+        return None
+    user_id = payload.get("sub")
+    if not user_id:
+        return None
+    return db.scalar(select(User).filter_by(id=int(user_id)))
 
 
 def require_role(*allowed_roles: str):

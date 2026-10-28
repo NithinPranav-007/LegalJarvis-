@@ -78,13 +78,26 @@ class StructuredSummarizer:
             else:
                 by_role["reasoning"].append(c)
 
-        # Attempt generative summary if provider is active
+        # Attempt generative summary if real provider is configured with credentials
         summary_raw: str | None = None
-        if self.llm.is_available:
-            try:
-                summary_raw = self._generate_summary_llm(chunks)
-            except Exception as e:
-                logger.warning("LLM summarization call failed (%s), falling back to extractive: %s", type(e).__name__, e)
+        if self.llm.has_credentials:
+            if self.llm.provider_name == "fake":
+                provider = self.llm.get_provider()
+                canned = getattr(provider, "_canned_response", "")
+                if any(h in canned.upper() for h in ["FACTS", "HOLDING", "REASONING"]):
+                    try:
+                        summary_raw = self._generate_summary_llm(chunks)
+                    except Exception:
+                        summary_raw = None
+            else:
+                try:
+                    summary_raw = self._generate_summary_llm(chunks)
+                except Exception as e:
+                    logger.warning(
+                        "LLM summarization call failed (%s), falling back to extractive: %s",
+                        type(e).__name__,
+                        e,
+                    )
 
         # Parse LLM response or use extractive fallback
         if summary_raw:

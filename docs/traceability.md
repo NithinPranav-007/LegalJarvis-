@@ -22,7 +22,7 @@ Status values:
 | **FR-05** | Cited question answering | P0 | `backend/app/qa/` (`orchestrator.py`, `query_analysis.py`, `context_builder.py`), `prompts/qa_v1.txt`, `api/qa.py` | `backend/tests/integration/test_qa.py` (T-FR05) | implemented |
 | **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | implemented |
 | **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/documents.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/app.spec.ts` (T-FR07), `frontend/tests/unit/CaseViewer.test.tsx`, `backend/tests/api/test_documents_and_feedback.py` | implemented |
-| **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
+| **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | implemented |
 | **FR-09** | Structured summarisation | P1 | `backend/app/summarize/`, `prompts/summary_v1.txt` | `backend/tests/unit/test_summarize.py` (T-FR09) | implemented |
 | **FR-10** | Conversational follow-ups | P1 | `backend/app/qa/query_analysis.py` | `backend/tests/unit/test_followup.py` | not started |
 | **FR-11** | Multi-document comparison | P2 | `backend/app/api/compare.py`, `frontend/src/pages/Compare.tsx` | `backend/tests/api/test_compare.py` | not started |
@@ -44,7 +44,7 @@ Status values:
 | **NFR-ACC** | Accuracy | P0 | Citation existence 100%; supported-claim rate measured | `backend/app/verify/` | `backend/tests/unit/test_verify.py` (T-FR06) | implemented |
 | **NFR-REL** | Reliability | P0 | Graceful degradation; `/health` endpoint; generator-down fallback | `backend/app/api/health.py`, `backend/app/qa/orchestrator.py` | `backend/tests/integration/test_degradation.py` | not started |
 | **NFR-SEC** | Security | P0 | OWASP Top 10 compliant; zero secrets in Git; parameterised SQL | `backend/app/core/security.py`, `.env.example`, CI | `scripts/ops/check_secrets.py`, `bandit` | in progress |
-| **NFR-PRIV** | Privacy | P0 | Private document cross-user isolation closed; RLS enabled | `backend/app/db/models.py`, `backend/app/api/documents.py` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
+| **NFR-PRIV** | Privacy | P0 | Private document cross-user isolation closed; RLS enabled | `backend/app/db/models.py`, `backend/app/api/documents.py` | `backend/tests/security/test_isolation.py` (T-FR08) | implemented |
 | **NFR-SCAL** | Scalability | P1 | Incremental ingestion; single-node Postgres + pgvector scaling | `backend/app/ingest/` | `backend/tests/integration/test_ingest_incremental.py` | not started |
 | **NFR-A11Y** | Accessibility | P1 | WCAG 2.1 AA for core flows; visible focus; axe-core checks | `frontend/src/` | `frontend/tests/e2e/a11y.spec.ts` (T-NFR-A11Y) | not started |
 | **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | in progress |

@@ -72,3 +72,9 @@ async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
+
+
+def get_sync_db():
+    """Dependency that yields a sync database session."""
+    with sync_session_maker() as session:
+        yield session

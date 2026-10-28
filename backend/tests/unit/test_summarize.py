@@ -8,8 +8,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.pool import StaticPool
 
-from app.api.search import get_sync_db
 from app.db.models import Base, Chunk, Court, DatasetSnapshot, Document, IngestionRun
+from app.db.session import get_sync_db
 from app.main import app
 from app.summarize.segmenter_model import RhetoricalSegmenter
 from app.summarize.summarizer import StructuredSummarizer

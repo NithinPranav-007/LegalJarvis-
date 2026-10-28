@@ -145,7 +145,7 @@ class Document(Base):
     __tablename__ = "documents"
 
     id: Mapped[int] = mapped_column(PK_BIGINT, primary_key=True, autoincrement=True)
-    run_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("ingestion_runs.id"), nullable=False)
+    run_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("ingestion_runs.id"), nullable=True)
     court_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("courts.id"), nullable=True)
     external_id: Mapped[str] = mapped_column(String, nullable=False)
     title: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -160,6 +160,9 @@ class Document(Base):
     )  # 'pending','ok','ocr','failed','skipped_lang'
     extraction_quality: Mapped[float | None] = mapped_column(Float, nullable=True)
     raw_metadata: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    owner_user_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=True
+    )
 
     __table_args__ = (
         UniqueConstraint("court_id", "external_id", name="uq_doc_court_external"),
@@ -169,9 +172,10 @@ class Document(Base):
         ),
         Index("idx_doc_date", "decision_date"),
         Index("idx_doc_court", "court_id"),
+        Index("idx_doc_owner", "owner_user_id"),
     )
 
-    ingestion_run: Mapped["IngestionRun"] = relationship(back_populates="documents")
+    ingestion_run: Mapped["IngestionRun | None"] = relationship(back_populates="documents")
     court: Mapped["Court | None"] = relationship(back_populates="documents")
     chunks: Mapped[list["Chunk"]] = relationship(
         back_populates="document", cascade="all, delete-orphan"
@@ -357,8 +361,12 @@ class UserDocument(Base):
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False)  # 'pending','processed','failed'
+    document_id: Mapped[int | None] = mapped_column(
+        BigInteger, ForeignKey("documents.id", ondelete="CASCADE"), nullable=True
+    )
 
     user: Mapped["User"] = relationship(back_populates="user_documents")
+    document: Mapped["Document | None"] = relationship()
 
 
 class Conversation(Base):

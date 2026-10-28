@@ -4,7 +4,7 @@ import json
 import math
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import Chunk, Court, Document
@@ -30,6 +30,7 @@ def search_dense(
     court_codes: list[str] | None = None,
     year_from: int | None = None,
     year_to: int | None = None,
+    user_id: int | None = None,
     limit: int = 50,
     offset: int = 0,
     embedder: BaseEmbedder | None = None,
@@ -38,6 +39,7 @@ def search_dense(
 
     Supports pgvector cosine distance on PostgreSQL, with an in-memory
     vector similarity fallback for SQLite test suites.
+    Isolates private chunks unless owner matches user_id.
     """
     active_embedder = embedder or get_embedder()
     query_text = query if isinstance(query, str) else ""
@@ -48,9 +50,13 @@ def search_dense(
         select(Chunk, Document, Court)
         .join(Document, Chunk.document_id == Document.id)
         .outerjoin(Court, Document.court_id == Court.id)
-        .filter(Chunk.owner_user_id.is_(None))  # Public corpus only
         .filter(Chunk.embedding.is_not(None))
     )
+
+    if user_id is None:
+        stmt = stmt.filter(Chunk.owner_user_id.is_(None))  # Public corpus only
+    else:
+        stmt = stmt.filter(or_(Chunk.owner_user_id.is_(None), Chunk.owner_user_id == user_id))
 
     if court_codes:
         stmt = stmt.filter(Court.code.in_(court_codes))

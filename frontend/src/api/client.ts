@@ -114,6 +114,48 @@ class ApiClient {
     }
     return res.json();
   }
+
+  async uploadDocument(file: File): Promise<{ document_id: number; filename: string; sha256: string; chunk_count: number; expires_at: string }> {
+    const formData = new FormData();
+    formData.append("file", file);
+    const headers: Record<string, string> = {};
+    if (this.token) {
+      headers["Authorization"] = `Bearer ${this.token}`;
+    }
+    const res = await fetch(`${API_BASE}/v1/documents/upload`, {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || `Upload failed with status ${res.status}`);
+    }
+    return res.json();
+  }
+
+  async deleteDocument(docId: number): Promise<{ status: string; document_id: number }> {
+    const res = await fetch(`${API_BASE}/v1/documents/${docId}`, {
+      method: "DELETE",
+      headers: this.headers(),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || `Deletion failed with status ${res.status}`);
+    }
+    return res.json();
+  }
+
+  async listUserDocuments(): Promise<Array<{ id: number; document_id: number | null; filename: string; sha256: string; status: string; expires_at: string }>> {
+    const res = await fetch(`${API_BASE}/v1/documents/user/list`, {
+      method: "GET",
+      headers: this.headers(),
+    });
+    if (!res.ok) {
+      return [];
+    }
+    return res.json();
+  }
 }
 
 export const api = new ApiClient();

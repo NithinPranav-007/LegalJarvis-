@@ -28,3 +28,21 @@ class DocumentDetail(BaseModel):
         default="Supreme Court judgments released under Open Government Data (OGD) / Creative Commons Attribution (CC-BY 4.0).",
         description="Dataset attribution notice",
     )
+
+
+class UploadResponse(BaseModel):
+    document_id: int
+    filename: str
+    sha256: str
+    chunk_count: int
+    expires_at: str
+    message: str = "Document successfully uploaded and processed into private namespace."
+
+
+class UserDocumentOut(BaseModel):
+    id: int
+    document_id: int | None
+    filename: str
+    sha256: str
+    status: str
+    expires_at: str

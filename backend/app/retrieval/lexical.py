@@ -4,7 +4,7 @@ import re
 from typing import Any
 
 from rank_bm25 import BM25Plus  # type: ignore[import-untyped]
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.db.models import Chunk, Court, Document
@@ -88,6 +88,7 @@ def search_lexical_db(
     court_codes: list[str] | None = None,
     year_from: int | None = None,
     year_to: int | None = None,
+    user_id: int | None = None,
     limit: int = 20,
     offset: int = 0,
 ) -> list[SearchResultItem]:
@@ -95,14 +96,19 @@ def search_lexical_db(
 
     Uses PostgreSQL FTS (to_tsvector/plainto_tsquery) when on Postgres;
     falls back to in-memory BM25 over matching candidate records on SQLite.
+    Isolates private chunks unless owner matches user_id.
     """
     bind = db.get_bind()
     stmt = (
         select(Chunk, Document, Court)
         .join(Document, Chunk.document_id == Document.id)
         .outerjoin(Court, Document.court_id == Court.id)
-        .filter(Chunk.owner_user_id.is_(None))  # Public corpus only
     )
+
+    if user_id is None:
+        stmt = stmt.filter(Chunk.owner_user_id.is_(None))  # Public corpus only
+    else:
+        stmt = stmt.filter(or_(Chunk.owner_user_id.is_(None), Chunk.owner_user_id == user_id))
 
     if court_codes:
         stmt = stmt.filter(Court.code.in_(court_codes))

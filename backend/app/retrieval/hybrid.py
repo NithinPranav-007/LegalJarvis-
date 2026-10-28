@@ -14,6 +14,7 @@ def search_hybrid(
     court_codes: list[str] | None = None,
     year_from: int | None = None,
     year_to: int | None = None,
+    user_id: int | None = None,
     k_lex: int = 50,
     k_dense: int = 50,
     rrf_constant: int = 60,
@@ -34,6 +35,7 @@ def search_hybrid(
         court_codes=court_codes,
         year_from=year_from,
         year_to=year_to,
+        user_id=user_id,
         limit=k_lex,
     )
 
@@ -44,6 +46,7 @@ def search_hybrid(
         court_codes=court_codes,
         year_from=year_from,
         year_to=year_to,
+        user_id=user_id,
         limit=k_dense,
     )
 
