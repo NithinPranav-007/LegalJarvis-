@@ -27,7 +27,7 @@ Status values:
 | **FR-10** | Conversational follow-ups | P1 | `backend/app/qa/query_analysis.py` | `backend/tests/unit/test_followup.py` | not started |
 | **FR-11** | Multi-document comparison | P2 | `backend/app/api/compare.py`, `frontend/src/pages/Compare.tsx` | `backend/tests/api/test_compare.py` | not started |
 | **FR-12** | Filters and metadata faceting | P0 | `backend/app/retrieval/filters.py`, `backend/app/api/search.py` | `backend/tests/api/test_search_facets.py` | not started |
-| **FR-13** | Statute lookup, versioning, IPC/BNS notice | P1 | `backend/app/statutes/` (`loader.py`, `versions.py`, `concordance.py`), `api/statutes.py` | `backend/tests/unit/test_statutes.py` (T-FR13) | not started |
+| **FR-13** | Statute lookup, versioning, IPC/BNS notice | P1 | `backend/app/statutes/` (`loader.py`, `versions.py`, `concordance.py`, `references.py`), `api/statutes.py` | `backend/tests/unit/test_statutes.py` (T-FR13) | implemented |
 | **FR-14** | User and reviewer feedback capture | P1 | `backend/app/api/feedback.py`, `frontend/src/components/FeedbackWidget.tsx` | `backend/tests/api/test_documents_and_feedback.py` (T-FR14), `frontend/tests/unit/HistoryAndFeedback.test.tsx` | implemented |
 | **FR-15** | Authentication and RBAC | P1 | `backend/app/api/auth.py`, `backend/app/core/security.py` | `backend/tests/api/test_auth.py` (T-FR15) | implemented |
 | **FR-16** | Evaluation harness and dashboard | P0 | `backend/app/eval/` (`runner.py`, `metrics.py`, `datasets.py`), `frontend/src/pages/AdminEval.tsx` | `backend/tests/integration/test_eval.py` (T-FR16) | in progress |
