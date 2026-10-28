@@ -49,6 +49,9 @@ switch ($Target.ToLower()) {
     "eval-retrieval" {
         python -m app.eval.runner --config configs/experiment.yaml
     }
+    "llm-ping" {
+        python -m app.llm.gateway $Args
+    }
     "smoke" {
         & "scripts\ops\smoke.ps1"
     }

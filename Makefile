@@ -1,4 +1,4 @@
-.PHONY: help setup lint test eval eval-retrieval smoke ingest embed run-backend run-frontend backup restore data-probe security clean
+.PHONY: help setup lint test eval eval-retrieval llm-ping smoke ingest embed run-backend run-frontend backup restore data-probe security clean
 
 PYTHON ?= python
 PIP ?= pip
@@ -39,6 +39,9 @@ eval:
 
 eval-retrieval:
 	$(PYTHON) -m app.eval.runner --config configs/experiment.yaml
+
+llm-ping:
+	$(PYTHON) -m app.llm.gateway
 
 smoke:
 	bash scripts/ops/smoke.sh || powershell -File scripts/ops/smoke.ps1
