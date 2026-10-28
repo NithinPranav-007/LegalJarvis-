@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.llm.gateway import LLMGateway, get_llm_gateway
 from app.qa.context_builder import build_qa_context
+from app.qa.guardrails import check_input_guardrails
 from app.qa.query_analysis import analyze_query
 from app.retrieval.hybrid import search_hybrid
 from app.schemas.qa import QACitation, QAResponse
@@ -60,6 +61,19 @@ class QAOrchestrator:
     ) -> QAResponse:
         """Execute full cited Question-Answering pipeline."""
         clean_q = question.strip()
+
+        # 0. Safety & Legal-Advice Guardrails (FR-17)
+        guardrail = check_input_guardrails(clean_q)
+        if not guardrail.is_safe:
+            return QAResponse(
+                question=clean_q,
+                answer=guardrail.refusal_message or "Request refused under safety guidelines.",
+                citations=[],
+                abstained=True,
+                abstention_reason=guardrail.reason,
+                disclaimer=settings.LEGAL_DISCLAIMER,
+                generation_status="refused",
+            )
 
         # 1. Query Analysis (detect sections, statutes, criminal transition notice)
         analysis = analyze_query(clean_q)

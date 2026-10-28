@@ -4,7 +4,8 @@ import datetime
 from typing import Any
 
 import bcrypt
-from jose import JWTError, jwt  # type: ignore[import-untyped]
+import jwt
+from jwt.exceptions import PyJWTError as JWTError
 
 from app.core.config import settings
 

@@ -31,7 +31,7 @@ Status values:
 | **FR-14** | User and reviewer feedback capture | P1 | `backend/app/api/feedback.py`, `backend/app/eval/gold_import.py`, `frontend/src/components/FeedbackWidget.tsx`, `frontend/src/pages/Reviewer.tsx` | `backend/tests/api/test_documents_and_feedback.py` (T-FR14), `backend/tests/eval/test_gold_protocol.py` (T-18), `frontend/tests/unit/HistoryAndFeedback.test.tsx` | implemented |
 | **FR-15** | Authentication and RBAC | P1 | `backend/app/api/auth.py`, `backend/app/core/security.py` | `backend/tests/api/test_auth.py` (T-FR15) | implemented |
 | **FR-16** | Evaluation harness and dashboard | P0 | `backend/app/eval/` (`runner.py`, `qa_runner.py`, `metrics.py`, `datasets.py`, `gold_import.py`) | `backend/tests/integration/test_eval.py` (T-FR16), `backend/tests/eval/test_gold_protocol.py` (T-18, T-19) | implemented |
-| **FR-17** | Safety and legal-advice guardrails | P0 | `backend/app/qa/guardrails.py`, `prompts/qa_v1.txt` | `backend/tests/security/test_guardrails.py` | not started |
+| **FR-17** | Safety and legal-advice guardrails | P0 | `backend/app/qa/guardrails.py`, `backend/app/qa/orchestrator.py`, `prompts/qa_v1.txt` | `backend/tests/security/test_guardrails.py` | implemented |
 | **FR-18** | Audit logging | P1 | `backend/app/core/logging.py`, `backend/app/qa/orchestrator.py` | `backend/tests/unit/test_audit_logging.py` | not started |
 
 ---
@@ -40,14 +40,14 @@ Status values:
 
 | Requirement ID | Dimension | Priority | Target / Pass Condition | Planned Module(s) | Planned Test(s) | Status |
 |---|---|---|---|---|---|---|
-| **NFR-PERF** | Performance | P0 | Search p95 <= 2s; Q&A p95 <= 20s; stream first token <= 5s | `backend/app/retrieval/`, `backend/app/qa/` | `tests/perf/locustfile.py` (T-NFR-PERF) | not started |
+| **NFR-PERF** | Performance | P0 | Search p95 <= 2s; Q&A p95 <= 20s; stream first token <= 5s | `backend/app/retrieval/`, `backend/app/qa/` | `tests/perf/locustfile.py`, `tests/perf/run_perf.py` (T-NFR-PERF) | implemented |
 | **NFR-ACC** | Accuracy | P0 | Citation existence 100%; supported-claim rate measured | `backend/app/verify/` | `backend/tests/unit/test_verify.py` (T-FR06) | implemented |
 | **NFR-REL** | Reliability | P0 | Graceful degradation; `/health` endpoint; generator-down fallback | `backend/app/api/health.py`, `backend/app/qa/orchestrator.py` | `backend/tests/integration/test_degradation.py` | not started |
-| **NFR-SEC** | Security | P0 | OWASP Top 10 compliant; zero secrets in Git; parameterised SQL | `backend/app/core/security.py`, `.env.example`, CI | `scripts/ops/check_secrets.py`, `bandit` | in progress |
+| **NFR-SEC** | Security | P0 | OWASP Top 10 compliant; zero secrets in Git; parameterised SQL | `backend/app/core/security.py`, `.env.example`, CI | `scripts/ops/check_secrets.py`, `bandit`, `pip-audit`, `npm audit` | implemented |
 | **NFR-PRIV** | Privacy | P0 | Private document cross-user isolation closed; RLS enabled | `backend/app/db/models.py`, `backend/app/api/documents.py` | `backend/tests/security/test_isolation.py` (T-FR08) | implemented |
 | **NFR-SCAL** | Scalability | P1 | Incremental ingestion; single-node Postgres + pgvector scaling | `backend/app/ingest/` | `backend/tests/integration/test_ingest_incremental.py` | not started |
-| **NFR-A11Y** | Accessibility | P1 | WCAG 2.1 AA for core flows; visible focus; axe-core checks | `frontend/src/` | `frontend/tests/e2e/a11y.spec.ts` (T-NFR-A11Y) | not started |
-| **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | in progress |
+| **NFR-A11Y** | Accessibility | P1 | WCAG 2.1 AA for core flows; visible focus; axe-core checks | `frontend/src/` | `frontend/tests/e2e/app.spec.ts` (T-NFR-A11Y) | implemented |
+| **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | implemented |
 | **NFR-FAULT** | Fault Tolerance | P0 | Resumable ingestion; all ingestion stages idempotent | `backend/app/ingest/` | `backend/tests/integration/test_ingest.py` | implemented |
 | **NFR-INTEG** | Data Integrity | P0 | Full provenance: chunk -> document -> raw file -> sha256 -> snapshot | `backend/app/db/models.py`, `backend/app/ingest/` | `backend/tests/db/test_models.py` | in progress |
 | **NFR-LOG** | Logging & Metrics | P1 | Structured JSON logs; request IDs; `/metrics` in Prometheus format | `backend/app/core/logging.py`, `backend/app/api/metrics.py` | `backend/tests/api/test_metrics.py` | not started |

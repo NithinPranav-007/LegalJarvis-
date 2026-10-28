@@ -97,6 +97,8 @@ def search_dense(
         scored: list[tuple[float, Any, Any, Any]] = []
 
         for chunk, doc, court in rows:
+            if chunk is None or doc is None or chunk.embedding is None:
+                continue
             vec: list[float]
             if isinstance(chunk.embedding, str):
                 vec = json.loads(chunk.embedding)

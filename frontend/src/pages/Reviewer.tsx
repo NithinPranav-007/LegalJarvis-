@@ -159,10 +159,12 @@ export const ReviewerPage: React.FC<Props> = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                <label htmlFor="answer-id-input" className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                   Answer ID under review
                 </label>
                 <input
+                  id="answer-id-input"
+                  aria-label="Answer ID under review"
                   type="number"
                   min="1"
                   value={answerId}
@@ -197,7 +199,9 @@ export const ReviewerPage: React.FC<Props> = () => {
                       }`}
                     >
                       <div className="text-sm font-semibold">{opt.label}</div>
-                      <div className="text-xs text-slate-500 mt-0.5">{opt.desc}</div>
+                      <div className={`text-xs mt-0.5 ${label === opt.id ? "text-indigo-800" : "text-slate-600"}`}>
+                        {opt.desc}
+                      </div>
                     </button>
                   ))}
                 </div>

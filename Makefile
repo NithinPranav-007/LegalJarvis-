@@ -1,4 +1,4 @@
-.PHONY: help setup lint test eval eval-retrieval llm-ping smoke ingest embed run-backend run-frontend backup restore data-probe security clean
+.PHONY: help setup lint test eval eval-retrieval eval-qa llm-ping smoke ingest embed run-backend run-frontend backup restore data-probe security perf a11y clean
 
 PYTHON ?= python
 PIP ?= pip
@@ -72,7 +72,15 @@ data-probe:
 
 security:
 	bandit -r backend/app -ll
-	ruff check backend/
+	pip-audit backend/
+	cd frontend && npm audit
+	$(PYTHON) scripts/ops/check_secrets.py
+
+perf:
+	$(PYTHON) tests/perf/run_perf.py --concurrency 20 --requests 100
+
+a11y:
+	cd frontend && npx playwright test --grep a11y
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

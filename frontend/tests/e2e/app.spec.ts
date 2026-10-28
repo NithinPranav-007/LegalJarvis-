@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 test.describe("LegalJarvis E2E Tests (PRD T-14)", () => {
   test.beforeEach(async ({ page }) => {
@@ -238,5 +239,59 @@ test.describe("LegalJarvis E2E Tests (PRD T-14)", () => {
     const searchTab = page.getByRole("button", { name: "Search" });
     await expect(askTab).toBeEnabled();
     await expect(searchTab).toBeEnabled();
+  });
+
+  test("8. Automated WCAG 2.1 AA audit with axe-core across core pages @a11y", async ({
+    page,
+  }) => {
+    // 1. Landing / Ask Q&A page
+    await page.goto("/");
+    const askAxe = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    const criticalAsk = askAxe.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    );
+    expect(criticalAsk).toEqual([]);
+
+    // 2. Search page
+    await page.getByRole("button", { name: "Search" }).click();
+    const searchAxe = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    const criticalSearch = searchAxe.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    );
+    expect(criticalSearch).toEqual([]);
+
+    // 3. Case Viewer page
+    await page.getByRole("button", { name: "Case Viewer" }).click();
+    const viewerAxe = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    const criticalViewer = viewerAxe.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    );
+    expect(criticalViewer).toEqual([]);
+
+    // 4. History page
+    await page.getByRole("button", { name: "History" }).click();
+    const historyAxe = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    const criticalHistory = historyAxe.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    );
+    expect(criticalHistory).toEqual([]);
+
+    // 5. Reviewer Portal page
+    await page.getByRole("button", { name: "Reviewer" }).click();
+    const reviewerAxe = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    const criticalReviewer = reviewerAxe.violations.filter(
+      (v) => v.impact === "critical" || v.impact === "serious"
+    );
+    expect(criticalReviewer).toEqual([]);
   });
 });

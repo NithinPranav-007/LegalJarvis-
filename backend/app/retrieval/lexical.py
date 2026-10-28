@@ -144,7 +144,12 @@ def search_lexical_db(
             )
     else:
         # SQLite / In-memory BM25 Fallback for offline testing
-        rows = db.execute(stmt).all()
+        raw_rows = db.execute(stmt).all()
+        rows = [
+            (c, d, ct)
+            for c, d, ct in raw_rows
+            if c is not None and getattr(c, "text", None) is not None and d is not None
+        ]
         if not rows:
             return []
 
