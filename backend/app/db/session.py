@@ -63,6 +63,19 @@ sync_session_maker = sessionmaker(
 )
 
 
+def get_sync_db():
+    """Dependency that yields a synchronous database session."""
+    db = sync_session_maker()
+    try:
+        yield db
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     """Dependency that yields an async database session."""
     async with async_session_maker() as session:
@@ -72,9 +85,3 @@ async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
         except Exception:
             await session.rollback()
             raise
-
-
-def get_sync_db():
-    """Dependency that yields a sync database session."""
-    with sync_session_maker() as session:
-        yield session

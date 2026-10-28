@@ -5,6 +5,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.db.session import get_sync_db
 from app.core.config import settings
 from app.core.security import (
     create_access_token,
@@ -13,7 +14,6 @@ from app.core.security import (
     verify_password,
 )
 from app.db.models import User
-from app.db.session import get_sync_db
 from app.schemas.auth import (
     TokenResponse,
     UserLoginRequest,
@@ -82,7 +82,6 @@ def get_optional_current_user(
 
 def require_role(*allowed_roles: str):
     """Dependency factory checking user role against allowed RBAC roles."""
-
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in allowed_roles:
             raise HTTPException(
