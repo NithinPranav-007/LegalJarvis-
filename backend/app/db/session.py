@@ -21,6 +21,25 @@ class Base(DeclarativeBase):
 
 # Async engine for FastAPI requests
 DATABASE_URL = os.getenv("DATABASE_URL", settings.DATABASE_URL)
+if DATABASE_URL.startswith("sqlite:///"):
+    ASYNC_DATABASE_URL = DATABASE_URL.replace("sqlite:///", "sqlite+aiosqlite:///")
+else:
+    ASYNC_DATABASE_URL = DATABASE_URL
+
+try:
+    async_engine = create_async_engine(
+        ASYNC_DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_pre_ping=True,
+    )
+    async_session_maker = async_sessionmaker(
+        async_engine,
+        class_=AsyncSession,
+        expire_on_commit=False,
+    )
+except Exception:
+    async_engine = None  # type: ignore[assignment]
+    async_session_maker = None  # type: ignore[assignment]
 # Synchronous engine for Alembic migrations and CLI jobs
 if os.getenv("SYNC_DATABASE_URL"):
     SYNC_DATABASE_URL = os.environ["SYNC_DATABASE_URL"]

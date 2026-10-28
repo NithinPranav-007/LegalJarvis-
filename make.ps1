@@ -44,7 +44,10 @@ switch ($Target.ToLower()) {
         pytest backend/tests -v
     }
     "eval" {
-        python -m backend.app.eval.runner --config configs/experiment.yaml
+        python -m app.eval.runner --config configs/experiment.yaml
+    }
+    "eval-retrieval" {
+        python -m app.eval.runner --config configs/experiment.yaml
     }
     "smoke" {
         & "scripts\ops\smoke.ps1"

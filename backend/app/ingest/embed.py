@@ -100,9 +100,7 @@ class SentenceTransformerEmbedder(BaseEmbedder):
     def _load_model(self) -> Any:
         if self._model is None:
             try:
-                from sentence_transformers import (
-                    SentenceTransformer,  # type: ignore[import-not-found]
-                )
+                from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found,import-untyped]
 
                 logger.info("Loading sentence transformer model: %s", self._model_name)
                 self._model = SentenceTransformer(self._model_name)

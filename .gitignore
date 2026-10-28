@@ -62,3 +62,6 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Evaluation run logs
+eval_runs/*.json

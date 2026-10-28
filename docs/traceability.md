@@ -30,7 +30,7 @@ Status values:
 | **FR-13** | Statute lookup, versioning, IPC/BNS notice | P1 | `backend/app/statutes/` (`loader.py`, `versions.py`, `concordance.py`), `api/statutes.py` | `backend/tests/unit/test_statutes.py` (T-FR13) | not started |
 | **FR-14** | User and reviewer feedback capture | P1 | `backend/app/api/feedback.py`, `frontend/src/components/FeedbackWidget.tsx` | `backend/tests/api/test_feedback.py` | not started |
 | **FR-15** | Authentication and RBAC | P1 | `backend/app/api/auth.py`, `backend/app/core/security.py` | `backend/tests/api/test_auth.py` (T-FR15) | not started |
-| **FR-16** | Evaluation harness and dashboard | P0 | `backend/app/eval/` (`runner.py`, `metrics.py`, `datasets.py`), `frontend/src/pages/AdminEval.tsx` | `backend/tests/integration/test_eval.py` (T-FR16) | not started |
+| **FR-16** | Evaluation harness and dashboard | P0 | `backend/app/eval/` (`runner.py`, `metrics.py`, `datasets.py`), `frontend/src/pages/AdminEval.tsx` | `backend/tests/integration/test_eval.py` (T-FR16) | in progress |
 | **FR-17** | Safety and legal-advice guardrails | P0 | `backend/app/qa/guardrails.py`, `prompts/qa_v1.txt` | `backend/tests/security/test_guardrails.py` | not started |
 | **FR-18** | Audit logging | P1 | `backend/app/core/logging.py`, `backend/app/qa/orchestrator.py` | `backend/tests/unit/test_audit_logging.py` | not started |
 

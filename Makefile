@@ -1,4 +1,4 @@
-.PHONY: help setup lint test eval smoke ingest embed run-backend run-frontend backup restore data-probe security clean
+.PHONY: help setup lint test eval eval-retrieval smoke ingest embed run-backend run-frontend backup restore data-probe security clean
 
 PYTHON ?= python
 PIP ?= pip
@@ -35,6 +35,9 @@ test:
 	pytest backend/tests -v
 
 eval:
+	$(PYTHON) -m app.eval.runner --config configs/experiment.yaml
+
+eval-retrieval:
 	$(PYTHON) -m app.eval.runner --config configs/experiment.yaml
 
 smoke:
