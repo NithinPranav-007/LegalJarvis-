@@ -56,8 +56,15 @@ def test_offsets_invariant_property() -> None:
         for chunk in chunks:
             # Enforce 100% offset round-trip invariant
             assert chunk.end_char > chunk.start_char
-            assert raw[chunk.start_char:chunk.end_char] == chunk.text
-            assert chunk.segment_type in ["facts", "issues", "arguments", "reasoning", "holding", "other"]
+            assert raw[chunk.start_char : chunk.end_char] == chunk.text
+            assert chunk.segment_type in [
+                "facts",
+                "issues",
+                "arguments",
+                "reasoning",
+                "holding",
+                "other",
+            ]
 
 
 def test_segment_classification_keywords() -> None:

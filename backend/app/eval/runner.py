@@ -253,10 +253,10 @@ def run_retrieval_benchmark(
 
 | Method | Recall@5 | Recall@10 | Recall@20 | MRR@10 | nDCG@10 |
 |---|---|---|---|---|---|
-| **BM25 (Lexical Only)** | {summary['BM25']['Recall@5']:.4f} | {summary['BM25']['Recall@10']:.4f} | {summary['BM25']['Recall@20']:.4f} | {summary['BM25']['MRR@10']:.4f} | {summary['BM25']['nDCG@10']:.4f} |
-| **Dense (Embedding Vector Only)** | {summary['Dense']['Recall@5']:.4f} | {summary['Dense']['Recall@10']:.4f} | {summary['Dense']['Recall@20']:.4f} | {summary['Dense']['MRR@10']:.4f} | {summary['Dense']['nDCG@10']:.4f} |
-| **Hybrid (RRF k=60)** | {summary['Hybrid_RRF']['Recall@5']:.4f} | {summary['Hybrid_RRF']['Recall@10']:.4f} | {summary['Hybrid_RRF']['Recall@20']:.4f} | {summary['Hybrid_RRF']['MRR@10']:.4f} | {summary['Hybrid_RRF']['nDCG@10']:.4f} |
-| **Hybrid + Rerank** | {summary['Hybrid_RRF_Rerank']['Recall@5']:.4f} | {summary['Hybrid_RRF_Rerank']['Recall@10']:.4f} | {summary['Hybrid_RRF_Rerank']['Recall@20']:.4f} | {summary['Hybrid_RRF_Rerank']['MRR@10']:.4f} | {summary['Hybrid_RRF_Rerank']['nDCG@10']:.4f} |
+| **BM25 (Lexical Only)** | {summary["BM25"]["Recall@5"]:.4f} | {summary["BM25"]["Recall@10"]:.4f} | {summary["BM25"]["Recall@20"]:.4f} | {summary["BM25"]["MRR@10"]:.4f} | {summary["BM25"]["nDCG@10"]:.4f} |
+| **Dense (Embedding Vector Only)** | {summary["Dense"]["Recall@5"]:.4f} | {summary["Dense"]["Recall@10"]:.4f} | {summary["Dense"]["Recall@20"]:.4f} | {summary["Dense"]["MRR@10"]:.4f} | {summary["Dense"]["nDCG@10"]:.4f} |
+| **Hybrid (RRF k=60)** | {summary["Hybrid_RRF"]["Recall@5"]:.4f} | {summary["Hybrid_RRF"]["Recall@10"]:.4f} | {summary["Hybrid_RRF"]["Recall@20"]:.4f} | {summary["Hybrid_RRF"]["MRR@10"]:.4f} | {summary["Hybrid_RRF"]["nDCG@10"]:.4f} |
+| **Hybrid + Rerank** | {summary["Hybrid_RRF_Rerank"]["Recall@5"]:.4f} | {summary["Hybrid_RRF_Rerank"]["Recall@10"]:.4f} | {summary["Hybrid_RRF_Rerank"]["Recall@20"]:.4f} | {summary["Hybrid_RRF_Rerank"]["MRR@10"]:.4f} | {summary["Hybrid_RRF_Rerank"]["nDCG@10"]:.4f} |
 
 ---
 
@@ -273,8 +273,8 @@ seed: {seed}
 k_lex: {k_lex}
 k_dense: {k_dense}
 rrf_constant: {rrf_constant}
-embedding_model: {cfg.get('models', {}).get('dense_embedding', {}).get('id', 'BAAI/bge-m3')}
-reranker_model: {cfg.get('models', {}).get('reranker', {}).get('id', 'BAAI/bge-reranker-base')}
+embedding_model: {cfg.get("models", {}).get("dense_embedding", {}).get("id", "BAAI/bge-m3")}
+reranker_model: {cfg.get("models", {}).get("reranker", {}).get("id", "BAAI/bge-reranker-base")}
 ```
 """
     md_report_file.write_text(md_content, encoding="utf-8")
@@ -285,14 +285,22 @@ reranker_model: {cfg.get('models', {}).get('reranker', {}).get('id', 'BAAI/bge-r
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="LegalJarvis Retrieval Evaluation Runner")
-    parser.add_argument("--config", default="configs/experiment.yaml", help="Path to experiment config")
+    parser.add_argument(
+        "--config", default="configs/experiment.yaml", help="Path to experiment config"
+    )
     args = parser.parse_args()
 
     payload = run_retrieval_benchmark(config_path=args.config)
     print("\n--- Retrieval Evaluation Summary ---")
     summary = payload["summary"]
-    print(f"{'Method':<20} {'Recall@5':<10} {'Recall@10':<10} {'Recall@20':<10} {'MRR@10':<10} {'nDCG@10':<10}")
+    print(
+        f"{'Method':<20} {'Recall@5':<10} {'Recall@10':<10} {'Recall@20':<10} {'MRR@10':<10} {'nDCG@10':<10}"
+    )
     print("-" * 70)
     for m, vals in summary.items():
-        print(f"{m:<20} {vals['Recall@5']:<10.4f} {vals['Recall@10']:<10.4f} {vals['Recall@20']:<10.4f} {vals['MRR@10']:<10.4f} {vals['nDCG@10']:<10.4f}")
-    print(f"\nResults written to eval_runs/ and docs/eval/retrieval_results.md (commit {payload['git_commit']})")
+        print(
+            f"{m:<20} {vals['Recall@5']:<10.4f} {vals['Recall@10']:<10.4f} {vals['Recall@20']:<10.4f} {vals['MRR@10']:<10.4f} {vals['nDCG@10']:<10.4f}"
+        )
+    print(
+        f"\nResults written to eval_runs/ and docs/eval/retrieval_results.md (commit {payload['git_commit']})"
+    )

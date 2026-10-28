@@ -66,6 +66,7 @@ def get_current_user(
 
 def require_role(*allowed_roles: str):
     """Dependency factory checking user role against allowed RBAC roles."""
+
     def role_checker(current_user: User = Depends(get_current_user)) -> User:
         if current_user.role not in allowed_roles:
             raise HTTPException(

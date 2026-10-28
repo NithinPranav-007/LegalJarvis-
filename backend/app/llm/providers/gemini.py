@@ -66,9 +66,7 @@ class GeminiProvider(BaseLLMProvider):
             },
         }
         if system_prompt:
-            payload["systemInstruction"] = {
-                "parts": [{"text": system_prompt}]
-            }
+            payload["systemInstruction"] = {"parts": [{"text": system_prompt}]}
         return payload
 
     def generate(

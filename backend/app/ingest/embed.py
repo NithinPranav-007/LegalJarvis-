@@ -145,7 +145,9 @@ def get_embedder(model_name: str | None = None) -> BaseEmbedder:
     import importlib.util
 
     if importlib.util.find_spec("sentence_transformers") is not None:
-        _CACHED_EMBEDDER = SentenceTransformerEmbedder(model_name=target, dimension=DEFAULT_DIMENSION)
+        _CACHED_EMBEDDER = SentenceTransformerEmbedder(
+            model_name=target, dimension=DEFAULT_DIMENSION
+        )
     else:
         logger.info("sentence_transformers not installed; using DeterministicHashEmbedder")
         _CACHED_EMBEDDER = DeterministicHashEmbedder(dimension=DEFAULT_DIMENSION)

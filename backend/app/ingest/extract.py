@@ -63,12 +63,14 @@ def extract_text_from_pdf(pdf_path: Path) -> ExtractionResult:
                 p_len = len(p_clean)
 
                 pages_text.append(p_clean)
-                page_offsets.append({
-                    "page_no": page_idx,
-                    "start_char": current_offset,
-                    "end_char": current_offset + p_len,
-                    "char_count": p_len,
-                })
+                page_offsets.append(
+                    {
+                        "page_no": page_idx,
+                        "start_char": current_offset,
+                        "end_char": current_offset + p_len,
+                        "char_count": p_len,
+                    }
+                )
                 current_offset += p_len + 2  # account for page break separator "\n\n"
 
         full_clean_text = "\n\n".join(pages_text).strip()

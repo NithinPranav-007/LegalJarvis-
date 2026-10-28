@@ -136,9 +136,7 @@ class Court(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     level: Mapped[str] = mapped_column(String, nullable=False)  # 'supreme','high'
 
-    __table_args__ = (
-        CheckConstraint("level IN ('supreme','high')", name="ck_court_level"),
-    )
+    __table_args__ = (CheckConstraint("level IN ('supreme','high')", name="ck_court_level"),)
 
     documents: Mapped[list["Document"]] = relationship(back_populates="court")
 
@@ -244,9 +242,7 @@ class Statute(Base):
     act_no: Mapped[int | None] = mapped_column(Integer, nullable=True)
     source_url: Mapped[str] = mapped_column(String, nullable=False)
 
-    __table_args__ = (
-        UniqueConstraint("short_name", "act_year", name="uq_statute_short_year"),
-    )
+    __table_args__ = (UniqueConstraint("short_name", "act_year", name="uq_statute_short_year"),)
 
     versions: Mapped[list["StatuteVersion"]] = relationship(
         back_populates="statute", cascade="all, delete-orphan"
@@ -257,9 +253,7 @@ class StatuteVersion(Base):
     __tablename__ = "statute_versions"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    statute_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("statutes.id"), nullable=False
-    )
+    statute_id: Mapped[int] = mapped_column(Integer, ForeignKey("statutes.id"), nullable=False)
     effective_from: Mapped[date] = mapped_column(Date, nullable=False)
     effective_to: Mapped[date | None] = mapped_column(Date, nullable=True)
     status: Mapped[str] = mapped_column(
@@ -290,9 +284,7 @@ class StatuteSection(Base):
     section_no: Mapped[str] = mapped_column(String, nullable=False)  # '302', '103'
     heading: Mapped[str | None] = mapped_column(String, nullable=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    chunk_id: Mapped[int | None] = mapped_column(
-        BigInteger, ForeignKey("chunks.id"), nullable=True
-    )
+    chunk_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("chunks.id"), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("version_id", "section_no", name="uq_statute_version_section"),
@@ -337,9 +329,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(PK_BIGINT, primary_key=True, autoincrement=True)
     email: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[str] = mapped_column(
-        String, nullable=False
-    )  # 'researcher','reviewer','admin'
+    role: Mapped[str] = mapped_column(String, nullable=False)  # 'researcher','reviewer','admin'
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -366,9 +356,7 @@ class UserDocument(Base):
     filename: Mapped[str] = mapped_column(String, nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    status: Mapped[str] = mapped_column(
-        String, nullable=False
-    )  # 'pending','processed','failed'
+    status: Mapped[str] = mapped_column(String, nullable=False)  # 'pending','processed','failed'
 
     user: Mapped["User"] = relationship(back_populates="user_documents")
 
@@ -403,9 +391,7 @@ class Message(Base):
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
-    __table_args__ = (
-        CheckConstraint("role IN ('user','assistant')", name="ck_message_role"),
-    )
+    __table_args__ = (CheckConstraint("role IN ('user','assistant')", name="ck_message_role"),)
 
     conversation: Mapped["Conversation"] = relationship(back_populates="messages")
     answer: Mapped["Answer | None"] = relationship(
@@ -442,9 +428,7 @@ class AnswerCitation(Base):
     answer_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("answers.id", ondelete="CASCADE"), primary_key=True
     )
-    chunk_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("chunks.id"), primary_key=True
-    )
+    chunk_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("chunks.id"), primary_key=True)
     marker: Mapped[str] = mapped_column(String, primary_key=True)  # '[C1]', '[C2]'
     support_status: Mapped[str] = mapped_column(
         String, nullable=False
@@ -467,9 +451,7 @@ class Feedback(Base):
     answer_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("answers.id", ondelete="CASCADE"), nullable=False
     )
-    user_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id"), nullable=False
-    )
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=False)
     rating: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)  # -1 or 1
     label: Mapped[str | None] = mapped_column(
         String, nullable=True
@@ -500,9 +482,7 @@ class EvalDataset(Base):
     synthetic: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     license: Mapped[str | None] = mapped_column(String, nullable=True)
 
-    __table_args__ = (
-        UniqueConstraint("name", "version", name="uq_eval_dataset_name_version"),
-    )
+    __table_args__ = (UniqueConstraint("name", "version", name="uq_eval_dataset_name_version"),)
 
     items: Mapped[list["EvalItem"]] = relationship(
         back_populates="dataset", cascade="all, delete-orphan"
@@ -513,9 +493,7 @@ class EvalItem(Base):
     __tablename__ = "eval_items"
 
     id: Mapped[int] = mapped_column(PK_BIGINT, primary_key=True, autoincrement=True)
-    dataset_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("eval_datasets.id"), nullable=False
-    )
+    dataset_id: Mapped[int] = mapped_column(Integer, ForeignKey("eval_datasets.id"), nullable=False)
     payload: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
     gold: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
 
@@ -545,9 +523,7 @@ class EvalResult(Base):
     run_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("eval_runs.id", ondelete="CASCADE"), primary_key=True
     )
-    item_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("eval_items.id"), primary_key=True
-    )
+    item_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("eval_items.id"), primary_key=True)
     metrics: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False)
     output: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 

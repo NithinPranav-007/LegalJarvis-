@@ -38,7 +38,12 @@ def upgrade() -> None:
         sa.Column("source_url", sa.String(), nullable=False),
         sa.Column("license", sa.String(), nullable=False),
         sa.Column("attribution", sa.String(), nullable=False),
-        sa.Column("acquired_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "acquired_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.Column("snapshot_note", sa.String(), nullable=True),
         sa.Column("manifest_path", sa.String(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
@@ -49,17 +54,26 @@ def upgrade() -> None:
     op.create_table(
         "ingestion_runs",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("snapshot_id", sa.BigInteger(), sa.ForeignKey("dataset_snapshots.id"), nullable=False),
+        sa.Column(
+            "snapshot_id", sa.BigInteger(), sa.ForeignKey("dataset_snapshots.id"), nullable=False
+        ),
         sa.Column("params", sa.JSON(), nullable=False),
         sa.Column("status", sa.String(), nullable=False),
         sa.Column("n_downloaded", sa.Integer(), nullable=False, default=0),
         sa.Column("n_registered", sa.Integer(), nullable=False, default=0),
         sa.Column("n_failed", sa.Integer(), nullable=False, default=0),
-        sa.Column("started_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "started_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("git_commit", sa.String(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-        sa.CheckConstraint("status IN ('running','success','partial','failed')", name="ck_ingest_status"),
+        sa.CheckConstraint(
+            "status IN ('running','success','partial','failed')", name="ck_ingest_status"
+        ),
     )
 
     # 3. courts
@@ -81,7 +95,12 @@ def upgrade() -> None:
         sa.Column("email", sa.String(), nullable=False),
         sa.Column("password_hash", sa.String(), nullable=False),
         sa.Column("role", sa.String(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("email", name="uq_user_email"),
         sa.CheckConstraint("role IN ('researcher','reviewer','admin')", name="ck_user_role"),
@@ -106,17 +125,27 @@ def upgrade() -> None:
         sa.Column("raw_metadata", sa.JSON(), nullable=True),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("court_id", "external_id", name="uq_doc_court_external"),
-        sa.CheckConstraint("extraction_status IN ('pending','ok','ocr','failed','skipped_lang')", name="ck_doc_extraction_status"),
+        sa.CheckConstraint(
+            "extraction_status IN ('pending','ok','ocr','failed','skipped_lang')",
+            name="ck_doc_extraction_status",
+        ),
     )
     op.create_index("idx_doc_date", "documents", ["decision_date"])
     op.create_index("idx_doc_court", "documents", ["court_id"])
 
     # 6. chunks
-    vector_type = Vector(1024) if (bind.dialect.name == "postgresql" and Vector is not None) else sa.Text()
+    vector_type = (
+        Vector(1024) if (bind.dialect.name == "postgresql" and Vector is not None) else sa.Text()
+    )
     op.create_table(
         "chunks",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("document_id", sa.BigInteger(), sa.ForeignKey("documents.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "document_id",
+            sa.BigInteger(),
+            sa.ForeignKey("documents.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("parent_id", sa.BigInteger(), sa.ForeignKey("chunks.id"), nullable=True),
         sa.Column("para_no", sa.Integer(), nullable=True),
         sa.Column("segment_type", sa.String(), nullable=True),
@@ -125,11 +154,19 @@ def upgrade() -> None:
         sa.Column("text", sa.Text(), nullable=False),
         sa.Column("embedding", vector_type, nullable=True),
         sa.Column("embed_model", sa.String(), nullable=True),
-        sa.Column("owner_user_id", sa.BigInteger(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=True),
+        sa.Column(
+            "owner_user_id",
+            sa.BigInteger(),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=True,
+        ),
         sa.Column("synthetic", sa.Boolean(), nullable=False, default=False),
         sa.PrimaryKeyConstraint("id"),
         sa.CheckConstraint("end_char > start_char", name="ck_chunk_offsets"),
-        sa.CheckConstraint("segment_type IS NULL OR segment_type IN ('facts','issues','arguments','reasoning','holding','other')", name="ck_chunk_segment_type"),
+        sa.CheckConstraint(
+            "segment_type IS NULL OR segment_type IN ('facts','issues','arguments','reasoning','holding','other')",
+            name="ck_chunk_segment_type",
+        ),
     )
     op.create_index("idx_chunk_doc", "chunks", ["document_id"])
     op.create_index("idx_chunk_owner", "chunks", ["owner_user_id"])
@@ -137,9 +174,16 @@ def upgrade() -> None:
     # 7. case_citations
     op.create_table(
         "case_citations",
-        sa.Column("citing_document_id", sa.BigInteger(), sa.ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True),
+        sa.Column(
+            "citing_document_id",
+            sa.BigInteger(),
+            sa.ForeignKey("documents.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
         sa.Column("cited_string", sa.String(), primary_key=True),
-        sa.Column("cited_document_id", sa.BigInteger(), sa.ForeignKey("documents.id"), nullable=True),
+        sa.Column(
+            "cited_document_id", sa.BigInteger(), sa.ForeignKey("documents.id"), nullable=True
+        ),
     )
 
     # 8. statutes
@@ -164,7 +208,9 @@ def upgrade() -> None:
         sa.Column("status", sa.String(), nullable=False),
         sa.Column("source_sha256", sa.String(64), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-        sa.CheckConstraint("status IN ('in_force','repealed','partially_in_force')", name="ck_statute_status"),
+        sa.CheckConstraint(
+            "status IN ('in_force','repealed','partially_in_force')", name="ck_statute_status"
+        ),
     )
 
     # 10. statute_sections
@@ -183,15 +229,32 @@ def upgrade() -> None:
     # 11. statute_references
     op.create_table(
         "statute_references",
-        sa.Column("document_id", sa.BigInteger(), sa.ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True),
-        sa.Column("section_id", sa.BigInteger(), sa.ForeignKey("statute_sections.id"), primary_key=True),
+        sa.Column(
+            "document_id",
+            sa.BigInteger(),
+            sa.ForeignKey("documents.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
+        sa.Column(
+            "section_id", sa.BigInteger(), sa.ForeignKey("statute_sections.id"), primary_key=True
+        ),
     )
 
     # 12. statute_concordance
     op.create_table(
         "statute_concordance",
-        sa.Column("old_section_id", sa.BigInteger(), sa.ForeignKey("statute_sections.id"), primary_key=True),
-        sa.Column("new_section_id", sa.BigInteger(), sa.ForeignKey("statute_sections.id"), primary_key=True),
+        sa.Column(
+            "old_section_id",
+            sa.BigInteger(),
+            sa.ForeignKey("statute_sections.id"),
+            primary_key=True,
+        ),
+        sa.Column(
+            "new_section_id",
+            sa.BigInteger(),
+            sa.ForeignKey("statute_sections.id"),
+            primary_key=True,
+        ),
         sa.Column("source_url", sa.String(), nullable=False),
         sa.Column("reviewed_by", sa.String(), nullable=False),
         sa.Column("reviewed_at", sa.Date(), nullable=False),
@@ -202,7 +265,12 @@ def upgrade() -> None:
     op.create_table(
         "user_documents",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("user_id", sa.BigInteger(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id",
+            sa.BigInteger(),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("filename", sa.String(), nullable=False),
         sa.Column("sha256", sa.String(64), nullable=False),
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False),
@@ -214,8 +282,18 @@ def upgrade() -> None:
     op.create_table(
         "conversations",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("user_id", sa.BigInteger(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "user_id",
+            sa.BigInteger(),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
     )
 
@@ -223,10 +301,20 @@ def upgrade() -> None:
     op.create_table(
         "messages",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("conversation_id", sa.BigInteger(), sa.ForeignKey("conversations.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "conversation_id",
+            sa.BigInteger(),
+            sa.ForeignKey("conversations.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("role", sa.String(), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.CheckConstraint("role IN ('user','assistant')", name="ck_message_role"),
     )
@@ -235,7 +323,12 @@ def upgrade() -> None:
     op.create_table(
         "answers",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("message_id", sa.BigInteger(), sa.ForeignKey("messages.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "message_id",
+            sa.BigInteger(),
+            sa.ForeignKey("messages.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("model_id", sa.String(), nullable=False),
         sa.Column("prompt_version", sa.String(), nullable=False),
         sa.Column("retrieval_ids", sa.JSON(), nullable=False),
@@ -248,26 +341,47 @@ def upgrade() -> None:
     # 17. answer_citations
     op.create_table(
         "answer_citations",
-        sa.Column("answer_id", sa.BigInteger(), sa.ForeignKey("answers.id", ondelete="CASCADE"), primary_key=True),
+        sa.Column(
+            "answer_id",
+            sa.BigInteger(),
+            sa.ForeignKey("answers.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
         sa.Column("chunk_id", sa.BigInteger(), sa.ForeignKey("chunks.id"), primary_key=True),
         sa.Column("marker", sa.String(), primary_key=True),
         sa.Column("support_status", sa.String(), nullable=False),
-        sa.CheckConstraint("support_status IN ('supported','unsupported','unchecked')", name="ck_cite_support_status"),
+        sa.CheckConstraint(
+            "support_status IN ('supported','unsupported','unchecked')",
+            name="ck_cite_support_status",
+        ),
     )
 
     # 18. feedback
     op.create_table(
         "feedback",
         sa.Column("id", pk_bigint, autoincrement=True, nullable=False),
-        sa.Column("answer_id", sa.BigInteger(), sa.ForeignKey("answers.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "answer_id",
+            sa.BigInteger(),
+            sa.ForeignKey("answers.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("user_id", sa.BigInteger(), sa.ForeignKey("users.id"), nullable=False),
         sa.Column("rating", sa.SmallInteger(), nullable=True),
         sa.Column("label", sa.String(), nullable=True),
         sa.Column("comment", sa.Text(), nullable=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.CheckConstraint("rating IN (-1, 1)", name="ck_feedback_rating"),
-        sa.CheckConstraint("label IS NULL OR label IN ('supported','unsupported','hallucinated','incomplete','wrong_law')", name="ck_feedback_label"),
+        sa.CheckConstraint(
+            "label IS NULL OR label IN ('supported','unsupported','hallucinated','incomplete','wrong_law')",
+            name="ck_feedback_label",
+        ),
     )
 
     # 19. eval_datasets
@@ -300,7 +414,12 @@ def upgrade() -> None:
         sa.Column("config", sa.JSON(), nullable=False),
         sa.Column("seed", sa.Integer(), nullable=False),
         sa.Column("git_commit", sa.String(), nullable=False),
-        sa.Column("started_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
+        sa.Column(
+            "started_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("CURRENT_TIMESTAMP"),
+            nullable=False,
+        ),
         sa.Column("finished_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -308,7 +427,12 @@ def upgrade() -> None:
     # 22. eval_results
     op.create_table(
         "eval_results",
-        sa.Column("run_id", sa.BigInteger(), sa.ForeignKey("eval_runs.id", ondelete="CASCADE"), primary_key=True),
+        sa.Column(
+            "run_id",
+            sa.BigInteger(),
+            sa.ForeignKey("eval_runs.id", ondelete="CASCADE"),
+            primary_key=True,
+        ),
         sa.Column("item_id", sa.BigInteger(), sa.ForeignKey("eval_items.id"), primary_key=True),
         sa.Column("metrics", sa.JSON(), nullable=False),
         sa.Column("output", sa.JSON(), nullable=True),

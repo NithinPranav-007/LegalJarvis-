@@ -49,7 +49,9 @@ def test_verify_existence_seeded_fabricated_marker() -> None:
 def test_verify_support_seeded_unsupported_claim() -> None:
     """Seed 2: Test detection of completely unsupported claim citing a real passage."""
     passage = "A suit for specific performance requires the plaintiff to establish readiness and willingness under Section 16(c) of Specific Relief Act."
-    fake_claim = "The Supreme Court declared all cryptocurrency transactions tax-free under Article 19 [C1]."
+    fake_claim = (
+        "The Supreme Court declared all cryptocurrency transactions tax-free under Article 19 [C1]."
+    )
 
     overlap = compute_claim_passage_overlap(fake_claim, passage)
     assert overlap == 0.0  # Zero overlap on factual legal words
@@ -119,9 +121,7 @@ def test_verify_clean_answer_passes() -> None:
     passage = "A suit for specific performance requires the plaintiff to establish readiness and willingness under Section 16(c) of Specific Relief Act."
     citation_map = {"[C1]": make_dummy_item(1, "[C1]", passage)}
 
-    clean_answer = (
-        "A suit for specific performance requires establishing readiness and willingness under Section 16(c) [C1]."
-    )
+    clean_answer = "A suit for specific performance requires establishing readiness and willingness under Section 16(c) [C1]."
 
     v_res = verify_and_filter_answer(clean_answer, citation_map)
     assert v_res.passed is True

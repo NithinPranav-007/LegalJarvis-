@@ -125,7 +125,9 @@ def verify_and_filter_answer(
         if has_hallucinations:
             reason_parts.append(f"hallucinated citations {existence.invalid_markers}")
         if failed_threshold:
-            reason_parts.append(f"supported claim fraction {supported_fraction:.2f} < threshold {min_supported_fraction:.2f}")
+            reason_parts.append(
+                f"supported claim fraction {supported_fraction:.2f} < threshold {min_supported_fraction:.2f}"
+            )
 
         abstention_reason = f"Verification failed: {', '.join(reason_parts)}."
         verified_answer = (

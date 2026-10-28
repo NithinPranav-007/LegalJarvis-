@@ -182,7 +182,9 @@ async def test_qa_api_endpoint(qa_db: Session) -> None:
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         resp = await client.post(
             "/v1/qa",
-            json={"question": "What are the rules for specific performance readiness and willingness?"},
+            json={
+                "question": "What are the rules for specific performance readiness and willingness?"
+            },
         )
         assert resp.status_code == 200
         data = resp.json()

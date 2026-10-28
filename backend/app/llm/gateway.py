@@ -28,7 +28,9 @@ class LLMGateway:
     ):
         raw_provider = provider_name or getattr(settings, "LLM_PROVIDER", "openai") or "openai"
         self._provider_name: str = str(raw_provider).lower()
-        self._model_name: str = str(model_name or getattr(settings, "LLM_MODEL", "gpt-4o-mini") or "gpt-4o-mini")
+        self._model_name: str = str(
+            model_name or getattr(settings, "LLM_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
+        )
         self._api_key: str = str(
             api_key
             or os.getenv("LLM_API_KEY")
@@ -36,7 +38,11 @@ class LLMGateway:
             or os.getenv("GEMINI_API_KEY")
             or ""
         )
-        self._base_url: str = str(base_url or getattr(settings, "LLM_BASE_URL", "https://api.openai.com/v1") or "https://api.openai.com/v1")
+        self._base_url: str = str(
+            base_url
+            or getattr(settings, "LLM_BASE_URL", "https://api.openai.com/v1")
+            or "https://api.openai.com/v1"
+        )
         self._provider_instance: BaseLLMProvider | None = None
 
     @property

@@ -11,7 +11,9 @@ app = typer.Typer(help="LegalJarvis Ingestion and Data Management CLI")
 
 @app.command()
 def embed(
-    batch_size: int = typer.Option(64, "--batch-size", "-b", help="Batch size for embedding generation"),
+    batch_size: int = typer.Option(
+        64, "--batch-size", "-b", help="Batch size for embedding generation"
+    ),
 ) -> None:
     """Generate dense vector embeddings for unindexed chunks."""
     typer.echo(f"Starting batch embedding: batch_size={batch_size}")
@@ -27,7 +29,9 @@ def embed(
 def ingest(
     source: str = typer.Option("sc", "--source", "-s", help="Corpus source: 'sc' or 'hc'"),
     years: int = typer.Option(2023, "--years", "-y", help="Year to ingest (default: 2023)"),
-    sample_limit: int = typer.Option(None, "--sample-limit", "-n", help="Limit number of documents for testing"),
+    sample_limit: int = typer.Option(
+        None, "--sample-limit", "-n", help="Limit number of documents for testing"
+    ),
     force: bool = typer.Option(False, "--force", "-f", help="Bypass MAX_DOWNLOAD_GB gate"),
 ) -> None:
     """Ingest, checksum, and register court judgments."""

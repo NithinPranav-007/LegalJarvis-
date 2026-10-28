@@ -128,7 +128,9 @@ class OpenAIProvider(BaseLLMProvider):
                         break
                     time.sleep((2**attempt) * 0.5)
 
-        raise RuntimeError(f"OpenAIProvider generation failed after {self._max_retries} attempts: {last_exc}")
+        raise RuntimeError(
+            f"OpenAIProvider generation failed after {self._max_retries} attempts: {last_exc}"
+        )
 
     async def agenerate(
         self,

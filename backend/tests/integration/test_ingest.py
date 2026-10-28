@@ -79,16 +79,18 @@ def test_ingestion_idempotency_with_fixtures(in_memory_db: Session, tmp_path: Pa
             tar.add(pdf_file, arcname=f"{c}_EN.pdf")
 
     # Create mock parquet metadata
-    df = pd.DataFrame([
-        {
-            "path": c,
-            "title": f"Case Title {c}",
-            "decision_date": "15-05-2023",
-            "nc_display": f"2023 INSC {c[-2:]}",
-            "court": "Supreme Court of India",
-        }
-        for c in cases
-    ])
+    df = pd.DataFrame(
+        [
+            {
+                "path": c,
+                "title": f"Case Title {c}",
+                "decision_date": "15-05-2023",
+                "nc_display": f"2023 INSC {c[-2:]}",
+                "court": "Supreme Court of India",
+            }
+            for c in cases
+        ]
+    )
     df.to_parquet(data_dir / "metadata.parquet")
 
     # Seed Court

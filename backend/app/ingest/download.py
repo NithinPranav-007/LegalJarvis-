@@ -19,6 +19,7 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) LegalJarvis/
 
 class IngestionError(Exception):
     """Custom exception raised during corpus download or registration."""
+
     pass
 
 
@@ -52,7 +53,7 @@ def download_file_with_gate(
         print(f"File already downloaded and size matches: {dest_path}")
         return size_bytes
 
-    print(f"Downloading {url} ({size_bytes / (1024*1024):.2f} MB)...")
+    print(f"Downloading {url} ({size_bytes / (1024 * 1024):.2f} MB)...")
     if not url.startswith(("https://", "http://")):
         raise IngestionError(f"Unsupported URL scheme: {url}")
     req = urllib.request.Request(url, headers=HEADERS)
@@ -197,11 +198,19 @@ def ingest_supreme_court_year(
                 run_id=run.id,
                 court_id=court.id,
                 external_id=base_id,
-                title=str(meta.get("title", "")) if meta is not None and pd.notna(meta.get("title")) else None,
+                title=str(meta.get("title", ""))
+                if meta is not None and pd.notna(meta.get("title"))
+                else None,
                 decision_date=decision_date,
-                neutral_citation=str(meta.get("nc_display", "")) if meta is not None and pd.notna(meta.get("nc_display")) else None,
+                neutral_citation=str(meta.get("nc_display", ""))
+                if meta is not None and pd.notna(meta.get("nc_display"))
+                else None,
                 language="en",
-                source_file_path=str(file_path.relative_to(Path(".")) if file_path.is_relative_to(Path(".")) else file_path),
+                source_file_path=str(
+                    file_path.relative_to(Path("."))
+                    if file_path.is_relative_to(Path("."))
+                    else file_path
+                ),
                 source_sha256=sha256_hash,
                 extraction_status="pending",
                 raw_metadata=raw_meta,

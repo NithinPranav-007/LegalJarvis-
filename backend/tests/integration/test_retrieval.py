@@ -75,9 +75,13 @@ def retrieval_db() -> Session:
 
     embedder = DeterministicHashEmbedder(dimension=DEFAULT_DIMENSION)
 
-    chunk1_text = "A suit for specific performance was filed seeking enforcement of the agreement for sale."
+    chunk1_text = (
+        "A suit for specific performance was filed seeking enforcement of the agreement for sale."
+    )
     chunk2_text = "The levy of service tax on user development fee collected under the Airports Authority Act."
-    chunk3_text = "Specific relief cannot be granted if damages provide adequate relief under the contract."
+    chunk3_text = (
+        "Specific relief cannot be granted if damages provide adequate relief under the contract."
+    )
 
     chunk1 = Chunk(
         document_id=doc1.id,

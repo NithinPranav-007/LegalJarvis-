@@ -7,7 +7,9 @@ from pydantic import BaseModel, Field
 
 class UserRegisterRequest(BaseModel):
     email: str = Field(..., min_length=5, max_length=255, description="User email address")
-    password: str = Field(..., min_length=8, max_length=128, description="User password (min 8 characters)")
+    password: str = Field(
+        ..., min_length=8, max_length=128, description="User password (min 8 characters)"
+    )
     role: Literal["researcher", "citizen", "reviewer", "admin"] = Field(
         default="researcher",
         description="Assigned RBAC role",

@@ -1,6 +1,5 @@
 """Question Answering API router (Task T-11 / FR-05)."""
 
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 

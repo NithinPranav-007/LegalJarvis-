@@ -21,14 +21,14 @@ Status values:
 | **FR-04** | Hybrid search with filters | P0 | `backend/app/retrieval/` (`lexical.py`, `dense.py`, `fusion.py`, `rerank.py`, `hybrid.py`, `filters.py`), `api/search.py` | `backend/tests/integration/test_retrieval.py` (T-FR04), `tests/api/test_search.py` | implemented |
 | **FR-05** | Cited question answering | P0 | `backend/app/qa/` (`orchestrator.py`, `query_analysis.py`, `context_builder.py`), `prompts/qa_v1.txt`, `api/qa.py` | `backend/tests/integration/test_qa.py` (T-FR05) | implemented |
 | **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | implemented |
-| **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/cases.py`, `backend/app/api/chunks.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/viewer.spec.ts` (T-FR07) | not started |
+| **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/documents.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/app.spec.ts` (T-FR07), `frontend/tests/unit/CaseViewer.test.tsx`, `backend/tests/api/test_documents_and_feedback.py` | implemented |
 | **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
 | **FR-09** | Structured summarisation | P1 | `backend/app/summarize/`, `prompts/summary_v1.txt` | `backend/tests/unit/test_summarize.py` (T-FR09) | not started |
 | **FR-10** | Conversational follow-ups | P1 | `backend/app/qa/query_analysis.py` | `backend/tests/unit/test_followup.py` | not started |
 | **FR-11** | Multi-document comparison | P2 | `backend/app/api/compare.py`, `frontend/src/pages/Compare.tsx` | `backend/tests/api/test_compare.py` | not started |
 | **FR-12** | Filters and metadata faceting | P0 | `backend/app/retrieval/filters.py`, `backend/app/api/search.py` | `backend/tests/api/test_search_facets.py` | not started |
 | **FR-13** | Statute lookup, versioning, IPC/BNS notice | P1 | `backend/app/statutes/` (`loader.py`, `versions.py`, `concordance.py`), `api/statutes.py` | `backend/tests/unit/test_statutes.py` (T-FR13) | not started |
-| **FR-14** | User and reviewer feedback capture | P1 | `backend/app/api/feedback.py`, `frontend/src/components/FeedbackWidget.tsx` | `backend/tests/api/test_feedback.py` | not started |
+| **FR-14** | User and reviewer feedback capture | P1 | `backend/app/api/feedback.py`, `frontend/src/components/FeedbackWidget.tsx` | `backend/tests/api/test_documents_and_feedback.py` (T-FR14), `frontend/tests/unit/HistoryAndFeedback.test.tsx` | implemented |
 | **FR-15** | Authentication and RBAC | P1 | `backend/app/api/auth.py`, `backend/app/core/security.py` | `backend/tests/api/test_auth.py` (T-FR15) | implemented |
 | **FR-16** | Evaluation harness and dashboard | P0 | `backend/app/eval/` (`runner.py`, `metrics.py`, `datasets.py`), `frontend/src/pages/AdminEval.tsx` | `backend/tests/integration/test_eval.py` (T-FR16) | in progress |
 | **FR-17** | Safety and legal-advice guardrails | P0 | `backend/app/qa/guardrails.py`, `prompts/qa_v1.txt` | `backend/tests/security/test_guardrails.py` | not started |

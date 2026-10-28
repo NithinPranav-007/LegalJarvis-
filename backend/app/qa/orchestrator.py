@@ -154,9 +154,7 @@ class QAOrchestrator:
             ]
             return QAResponse(
                 question=clean_q,
-                answer=(
-                    f"LLM generator error ({exc}). Returning retrieved source passages only."
-                ),
+                answer=(f"LLM generator error ({exc}). Returning retrieved source passages only."),
                 citations=degraded_citations,
                 abstained=False,
                 abstention_reason=None,
@@ -170,7 +168,8 @@ class QAOrchestrator:
             explanation = raw_answer.replace(ABSTENTION_MARKER, "").strip()
             return QAResponse(
                 question=clean_q,
-                answer=explanation or "The available legal context does not contain sufficient evidence to answer this question.",
+                answer=explanation
+                or "The available legal context does not contain sufficient evidence to answer this question.",
                 citations=[],
                 abstained=True,
                 abstention_reason="Insufficient evidence in retrieved passages.",
