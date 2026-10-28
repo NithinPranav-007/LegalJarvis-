@@ -17,7 +17,7 @@ Status values:
 |---|---|---|---|---|---|
 | **FR-01** | Corpus ingestion (SC/HC/statutes) | P0 | `backend/app/ingest/download.py`, `cli.py`, `scripts/data/` | `backend/tests/integration/test_ingest.py` (T-FR01) | implemented |
 | **FR-02** | Text extraction and normalisation | P0 | `backend/app/ingest/extract.py`, `backend/app/ingest/clean.py` | `backend/tests/unit/test_extract.py` (T-FR02) | implemented |
-| **FR-03** | Structure-aware segmentation | P0 | `backend/app/ingest/segment.py` | `backend/tests/unit/test_segment.py` (T-FR03 offsets test) | not started |
+| **FR-03** | Structure-aware segmentation | P0 | `backend/app/ingest/segment.py` | `backend/tests/unit/test_segment.py` (T-FR03 offsets test) | implemented |
 | **FR-04** | Hybrid search with filters | P0 | `backend/app/retrieval/` (`lexical.py`, `dense.py`, `fusion.py`, `rerank.py`, `filters.py`), `api/search.py` | `backend/tests/integration/test_retrieval.py` (T-FR04) | not started |
 | **FR-05** | Cited question answering | P0 | `backend/app/qa/` (`orchestrator.py`, `query_analysis.py`, `context_builder.py`), `prompts/qa_v1.txt`, `api/qa.py` | `backend/tests/integration/test_qa.py` (T-FR05) | not started |
 | **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | not started |
