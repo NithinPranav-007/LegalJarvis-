@@ -1,0 +1,310 @@
+{
+  "statuses": {
+    "ok": 30,
+    "ocr": 0,
+    "failed": 0,
+    "skipped_lang": 0
+  },
+  "results": [
+    {
+      "index": 1,
+      "filename": "2023_7_322_346_EN.pdf",
+      "size_kb": 511,
+      "pages": 25,
+      "chars": 53779,
+      "quality_score": 0.901,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 2,
+      "filename": "2023_16_888_916_EN.pdf",
+      "size_kb": 660,
+      "pages": 29,
+      "chars": 54639,
+      "quality_score": 0.881,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 3,
+      "filename": "2023_7_26_84_EN.pdf",
+      "size_kb": 620,
+      "pages": 59,
+      "chars": 130211,
+      "quality_score": 0.889,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 4,
+      "filename": "2023_2_312_325_EN.pdf",
+      "size_kb": 319,
+      "pages": 14,
+      "chars": 29850,
+      "quality_score": 0.894,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 5,
+      "filename": "2023_16_1535_1546_EN.pdf",
+      "size_kb": 294,
+      "pages": 12,
+      "chars": 23833,
+      "quality_score": 0.899,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 6,
+      "filename": "2023_8_152_182_EN.pdf",
+      "size_kb": 3102,
+      "pages": 31,
+      "chars": 58645,
+      "quality_score": 0.893,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 7,
+      "filename": "2023_15_1067_1073_EN.pdf",
+      "size_kb": 466,
+      "pages": 7,
+      "chars": 15388,
+      "quality_score": 0.902,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 8,
+      "filename": "2023_2_326_338_EN.pdf",
+      "size_kb": 331,
+      "pages": 13,
+      "chars": 29095,
+      "quality_score": 0.896,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 9,
+      "filename": "2023_6_695_716_EN.pdf",
+      "size_kb": 407,
+      "pages": 22,
+      "chars": 46986,
+      "quality_score": 0.894,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 10,
+      "filename": "2023_11_623_642_EN.pdf",
+      "size_kb": 498,
+      "pages": 20,
+      "chars": 42580,
+      "quality_score": 0.897,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 11,
+      "filename": "2023_6_419_424_EN.pdf",
+      "size_kb": 160,
+      "pages": 6,
+      "chars": 11383,
+      "quality_score": 0.886,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 12,
+      "filename": "2023_16_377_434_EN.pdf",
+      "size_kb": 1004,
+      "pages": 58,
+      "chars": 123491,
+      "quality_score": 0.892,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 13,
+      "filename": "2023_11_886_936_EN.pdf",
+      "size_kb": 827,
+      "pages": 51,
+      "chars": 111702,
+      "quality_score": 0.898,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 14,
+      "filename": "2023_15_841_847_EN.pdf",
+      "size_kb": 208,
+      "pages": 7,
+      "chars": 14449,
+      "quality_score": 0.891,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 15,
+      "filename": "2023_11_643_651_EN.pdf",
+      "size_kb": 172,
+      "pages": 9,
+      "chars": 18348,
+      "quality_score": 0.884,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 16,
+      "filename": "2023_11_469_483_EN.pdf",
+      "size_kb": 259,
+      "pages": 15,
+      "chars": 34857,
+      "quality_score": 0.9,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 17,
+      "filename": "2023_6_546_562_EN.pdf",
+      "size_kb": 224,
+      "pages": 17,
+      "chars": 37721,
+      "quality_score": 0.896,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 18,
+      "filename": "2023_16_872_887_EN.pdf",
+      "size_kb": 429,
+      "pages": 16,
+      "chars": 36347,
+      "quality_score": 0.881,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 19,
+      "filename": "2023_10_1133_1138_EN.pdf",
+      "size_kb": 132,
+      "pages": 6,
+      "chars": 11829,
+      "quality_score": 0.892,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 20,
+      "filename": "2023_15_313_324_EN.pdf",
+      "size_kb": 294,
+      "pages": 12,
+      "chars": 24952,
+      "quality_score": 0.889,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 21,
+      "filename": "2023_11_484_506_EN.pdf",
+      "size_kb": 345,
+      "pages": 23,
+      "chars": 50229,
+      "quality_score": 0.895,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 22,
+      "filename": "2023_14_306_319_EN.pdf",
+      "size_kb": 251,
+      "pages": 14,
+      "chars": 30185,
+      "quality_score": 0.899,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 23,
+      "filename": "2023_5_571_581_EN.pdf",
+      "size_kb": 155,
+      "pages": 11,
+      "chars": 22505,
+      "quality_score": 0.884,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 24,
+      "filename": "2023_11_652_673_EN.pdf",
+      "size_kb": 317,
+      "pages": 22,
+      "chars": 45367,
+      "quality_score": 0.904,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 25,
+      "filename": "2023_11_602_612_EN.pdf",
+      "size_kb": 258,
+      "pages": 11,
+      "chars": 23509,
+      "quality_score": 0.894,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 26,
+      "filename": "2023_13_1090_1094_EN.pdf",
+      "size_kb": 377,
+      "pages": 5,
+      "chars": 10273,
+      "quality_score": 0.884,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 27,
+      "filename": "2023_15_808_820_EN.pdf",
+      "size_kb": 294,
+      "pages": 13,
+      "chars": 28405,
+      "quality_score": 0.891,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 28,
+      "filename": "2023_6_412_418_EN.pdf",
+      "size_kb": 422,
+      "pages": 7,
+      "chars": 12694,
+      "quality_score": 0.885,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 29,
+      "filename": "2023_10_368_371_EN.pdf",
+      "size_kb": 179,
+      "pages": 4,
+      "chars": 6742,
+      "quality_score": 0.882,
+      "status": "ok",
+      "error": null
+    },
+    {
+      "index": 30,
+      "filename": "2023_14_293_305_EN.pdf",
+      "size_kb": 251,
+      "pages": 13,
+      "chars": 27839,
+      "quality_score": 0.899,
+      "status": "ok",
+      "error": null
+    }
+  ]
+}
