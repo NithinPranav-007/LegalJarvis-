@@ -43,11 +43,11 @@ Status values:
 | **NFR-PERF** | Performance | P0 | Search p95 <= 2s; Q&A p95 <= 20s; stream first token <= 5s | `backend/app/retrieval/`, `backend/app/qa/` | `tests/perf/locustfile.py` (T-NFR-PERF) | not started |
 | **NFR-ACC** | Accuracy | P0 | Citation existence 100%; supported-claim rate measured | `backend/app/verify/` | `backend/tests/unit/test_verify.py` (T-FR06) | not started |
 | **NFR-REL** | Reliability | P0 | Graceful degradation; `/health` endpoint; generator-down fallback | `backend/app/api/health.py`, `backend/app/qa/orchestrator.py` | `backend/tests/integration/test_degradation.py` | not started |
-| **NFR-SEC** | Security | P0 | OWASP Top 10 compliant; zero secrets in Git; parameterised SQL | `backend/app/core/security.py`, `.env.example`, CI | `scripts/ops/security_scan.sh` (gitleaks, bandit, pip-audit) | not started |
+| **NFR-SEC** | Security | P0 | OWASP Top 10 compliant; zero secrets in Git; parameterised SQL | `backend/app/core/security.py`, `.env.example`, CI | `scripts/ops/check_secrets.py`, `bandit` | in progress |
 | **NFR-PRIV** | Privacy | P0 | Private document cross-user isolation closed; RLS enabled | `backend/app/db/models.py`, `backend/app/api/documents.py` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
 | **NFR-SCAL** | Scalability | P1 | Incremental ingestion; single-node Postgres + pgvector scaling | `backend/app/ingest/` | `backend/tests/integration/test_ingest_incremental.py` | not started |
 | **NFR-A11Y** | Accessibility | P1 | WCAG 2.1 AA for core flows; visible focus; axe-core checks | `frontend/src/` | `frontend/tests/e2e/a11y.spec.ts` (T-NFR-A11Y) | not started |
-| **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | not started |
+| **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | in progress |
 | **NFR-FAULT** | Fault Tolerance | P0 | Resumable ingestion; all ingestion stages idempotent | `backend/app/ingest/` | `backend/tests/integration/test_ingest_idempotency.py` | not started |
 | **NFR-INTEG** | Data Integrity | P0 | Full provenance: chunk -> document -> raw file -> sha256 -> snapshot | `backend/app/db/models.py`, `backend/app/ingest/` | `backend/tests/db/test_provenance.py` (T-DATA) | not started |
 | **NFR-LOG** | Logging & Metrics | P1 | Structured JSON logs; request IDs; `/metrics` in Prometheus format | `backend/app/core/logging.py`, `backend/app/api/metrics.py` | `backend/tests/api/test_metrics.py` | not started |

@@ -1,0 +1,35 @@
+# Experiment reproducibility configuration per PRD Section D9
+seed: 42
+
+dataset_snapshots:
+  sc_judgments: "s3://indian-supreme-court-judgments/data/tar/year=2023/english/"
+  statutes: "india_code_central_acts"
+
+models:
+  dense_embedding:
+    id: "BAAI/bge-m3"
+    dimension: 1024
+    revision: "main"
+  reranker:
+    id: "BAAI/bge-reranker-base"
+    revision: "main"
+  llm:
+    id: "gpt-4o-mini"
+    temperature: 0.0
+
+retrieval_params:
+  chunk_target_tokens: 400
+  k_lex: 50
+  k_dense: 50
+  rrf_constant: 60
+  rerank_top_k: 30
+  context_top_k: 6
+
+prompt:
+  qa_version: "qa_v1"
+  judge_version: "judge_v1"
+  summary_version: "summary_v1"
+
+verification:
+  overlap_threshold: 0.25
+  min_supported_sentence_fraction: 0.60

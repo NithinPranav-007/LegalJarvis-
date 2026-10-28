@@ -1,0 +1,22 @@
+app:
+  name: "LegalJarvis"
+  env: "development"
+  max_download_gb: 5.0
+  upload_retention_days: 30
+  rate_limit_per_hour: 30
+
+database:
+  pool_size: 10
+  max_overflow: 20
+
+retrieval:
+  k_lex: 50
+  k_dense: 50
+  rrf_k: 60
+  rerank_top_n: 30
+  context_top_n: 6
+
+verification:
+  existence_enforced: true
+  lexical_overlap_threshold: 0.25
+  min_supported_ratio: 0.60

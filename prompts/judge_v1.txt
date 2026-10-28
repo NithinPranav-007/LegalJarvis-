@@ -1,0 +1,16 @@
+You are a legal citation verifier for Indian law.
+
+Given a claim sentence and a source passage text, determine whether the claim is factually supported by the passage.
+
+Output strictly in JSON format with fields:
+- "supported": true or false
+- "confidence": score between 0.0 and 1.0
+- "rationale": one sentence explaining the decision
+
+CLAIM:
+{claim}
+
+SOURCE PASSAGE:
+{passage}
+
+VERIFICATION RESULT:

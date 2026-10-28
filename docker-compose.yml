@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: legaljarvis-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-legaljarvis}
+      POSTGRES_USER: ${POSTGRES_USER:-legaljarvis}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-legaljarvis_dev_pass}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-legaljarvis} -d ${POSTGRES_DB:-legaljarvis}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: legaljarvis-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-legaljarvis}:${POSTGRES_PASSWORD:-legaljarvis_dev_pass}@db:5432/${POSTGRES_DB:-legaljarvis}
+      - SYNC_DATABASE_URL=postgresql://${POSTGRES_USER:-legaljarvis}:${POSTGRES_PASSWORD:-legaljarvis_dev_pass}@db:5432/${POSTGRES_DB:-legaljarvis}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./backend:/app
+      - ./data:/app/data
+      - ./prompts:/app/prompts
+      - ./configs:/app/configs
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: legaljarvis-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:
