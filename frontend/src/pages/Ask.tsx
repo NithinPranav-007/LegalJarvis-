@@ -9,6 +9,8 @@ import {
   Sparkles,
   ExternalLink,
   RotateCcw,
+  Scale,
+  ShieldCheck,
 } from "lucide-react";
 import { api } from "../api/client";
 import { FeedbackWidget } from "../components/FeedbackWidget";
@@ -97,7 +99,7 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
                 type="button"
                 onClick={() => citation && handleCitationClick(citation)}
                 title={citation ? `${citation.title} (Para ${citation.para_no ?? "N/A"})` : "Citation"}
-                className="inline-flex items-center text-xs font-mono font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-900 border border-indigo-300 rounded px-1.5 py-0.5 mx-0.5 cursor-pointer transition-colors"
+                className="inline-flex items-center text-xs font-mono font-bold bg-indigo-100 hover:bg-indigo-200 text-indigo-900 border border-indigo-300 rounded px-1.5 py-0.5 mx-0.5 cursor-pointer transition-colors shadow-2xs"
               >
                 {marker}
               </button>
@@ -113,18 +115,22 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Intro Header */}
       <section className="mb-6 text-center">
-        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-indigo-100 border border-indigo-300 text-indigo-900 text-xs font-bold mb-3">
+          <ShieldCheck className="h-3.5 w-3.5 text-indigo-700" />
+          <span>Grounded Retrieval-Augmented Generation</span>
+        </div>
+        <h2 className="text-3xl font-black text-slate-900 tracking-tight mb-2">
           Citation-Verified Legal Q&amp;A
         </h2>
-        <p className="text-slate-600 text-sm max-w-xl mx-auto">
+        <p className="text-slate-700 text-sm max-w-xl mx-auto leading-relaxed">
           Ask Indian law questions grounded in Supreme Court and High Court precedents. Every claim is strictly
-          verified against paragraph citations.
+          verified against paragraph citations with automated safety abstention.
         </p>
       </section>
 
       {/* Query Input Box */}
       <form onSubmit={handleSubmit} className="mb-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-300 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-600 focus-within:border-transparent transition-all">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-300 overflow-hidden focus-within:ring-2 focus-within:ring-indigo-600 focus-within:border-transparent transition-all">
           <textarea
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
@@ -132,18 +138,18 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
             placeholder="Ask a question on Indian case law, statutory interpretation, or constitutional principles..."
             className="w-full p-4 text-slate-900 placeholder-slate-400 focus:outline-none resize-none text-base"
           />
-          <div className="bg-slate-50 px-4 py-2.5 flex items-center justify-between border-t border-slate-200">
-            <span className="text-xs text-slate-500 flex items-center space-x-1">
-              <Sparkles className="h-3.5 w-3.5 text-indigo-600" />
+          <div className="bg-slate-50 px-4 py-3 flex items-center justify-between border-t border-slate-200">
+            <span className="text-xs text-slate-500 flex items-center space-x-1.5 font-medium">
+              <Sparkles className="h-4 w-4 text-indigo-600" />
               <span>Grounded in Supreme Court &amp; Central Statutes</span>
             </span>
             <button
               type="submit"
               disabled={loading || question.trim().length < 3}
-              className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-medium rounded-lg text-sm flex items-center space-x-1.5 transition-colors shadow-sm"
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-semibold rounded-xl text-sm flex items-center space-x-2 transition-all shadow-xs"
             >
               <span>{loading ? "Analyzing..." : "Ask LegalJarvis"}</span>
-              <Send className="h-4 w-4" />
+              <Send className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
@@ -151,10 +157,14 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
 
       {/* Empty State */}
       {!hasSubmitted && !loading && !error && (
-        <section aria-label="Suggested Questions" className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center space-x-2 text-indigo-700 mb-3">
-            <HelpCircle className="h-5 w-5" />
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">Sample Indian Legal Inquiries</h3>
+        <section aria-label="Suggested Questions" className="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
+          <div className="flex items-center space-x-2 text-indigo-700 mb-4">
+            <div className="p-1.5 bg-indigo-50 border border-indigo-100 rounded-lg">
+              <HelpCircle className="h-4 w-4 text-indigo-600" />
+            </div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
+              Sample Indian Legal Inquiries
+            </h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {SUGGESTED_QUESTIONS.map((q, idx) => (
@@ -165,10 +175,10 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
                   setQuestion(q);
                   handleSubmit(undefined, q);
                 }}
-                className="text-left p-3.5 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-indigo-50/50 hover:border-indigo-200 text-slate-800 text-xs font-medium transition-colors flex items-start justify-between group"
+                className="text-left p-4 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-indigo-50/60 hover:border-indigo-300 text-slate-800 text-xs font-medium transition-all flex items-start justify-between group shadow-2xs hover:scale-101"
               >
-                <span>{q}</span>
-                <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 flex-shrink-0 ml-2 mt-0.5" />
+                <span className="leading-relaxed">{q}</span>
+                <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 flex-shrink-0 ml-2 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
               </button>
             ))}
           </div>
@@ -180,11 +190,11 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
         <div
           role="status"
           aria-live="polite"
-          className="bg-white rounded-xl border border-slate-200 p-8 text-center shadow-sm space-y-4 my-6"
+          className="bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-xs space-y-4 my-6"
         >
           <div className="animate-spin h-9 w-9 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto" />
           <div>
-            <h4 className="text-base font-semibold text-slate-800">Retrieving Authoritative Passages</h4>
+            <h4 className="text-base font-bold text-slate-800">Retrieving Authoritative Passages</h4>
             <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
               Synthesizing legal reasoning, verifying paragraph references, and checking criminal law transition
               statutes...
@@ -197,7 +207,7 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
       {error && !loading && (
         <div
           role="alert"
-          className="bg-red-50 border border-red-200 rounded-xl p-5 my-6 flex items-start space-x-3 text-red-900"
+          className="bg-red-50 border border-red-200 rounded-2xl p-5 my-6 flex items-start space-x-3 text-red-900 shadow-xs"
         >
           <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
@@ -206,7 +216,7 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
             <button
               type="button"
               onClick={() => handleSubmit()}
-              className="mt-3 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded-md flex items-center space-x-1.5 transition-colors"
+              className="mt-3 px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition-colors shadow-2xs"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>Retry Query</span>
@@ -220,7 +230,7 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
         <div
           role="alert"
           aria-label="Low Evidence Abstention"
-          className="bg-amber-50 border border-amber-300 rounded-xl p-6 my-6 shadow-sm"
+          className="bg-amber-50/80 border border-amber-300 rounded-2xl p-6 my-6 shadow-xs"
         >
           <div className="flex items-start space-x-3.5">
             <AlertOctagon className="h-6 w-6 text-amber-700 flex-shrink-0 mt-0.5" />
@@ -228,7 +238,7 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
               <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 block mb-1">
                 Low-Evidence Abstention (Safety Protocol FR-03 / FR-06)
               </span>
-              <h3 className="text-base font-bold text-amber-950 mb-2">
+              <h3 className="text-base font-bold text-amber-950 mb-2 leading-snug">
                 LegalJarvis could not find sufficient authoritative Indian case law or statutory authority to reliably
                 answer this question.
               </h3>
@@ -236,7 +246,7 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
                 {response.abstention_reason ||
                   "Retrieved precedent passages did not meet the required citation support threshold (60%+ keyword support across verified judgments). To prevent legal hallucinations, LegalJarvis will not generate an unsubstantiated answer."}
               </p>
-              <div className="bg-white/80 p-3 rounded border border-amber-200 text-xs text-amber-900">
+              <div className="bg-white/80 p-3.5 rounded-xl border border-amber-200 text-xs text-amber-900">
                 <span className="font-semibold block mb-1">Recommended Adjustments:</span>
                 <ul className="list-disc list-inside space-y-1 text-slate-700">
                   <li>Check spelling of party names, Act names, or section numbers.</li>
@@ -258,11 +268,14 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
           )}
 
           {/* Formatted Answer Container */}
-          <article className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+          <article className="legal-card p-6 shadow-sm">
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">Verified Answer</span>
-              <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-medium">
-                Citation Verified
+              <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 flex items-center space-x-1.5">
+                <Scale className="h-3.5 w-3.5" />
+                <span>Verified Answer</span>
+              </span>
+              <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
+                ● Citation Verified
               </span>
             </div>
 
@@ -287,36 +300,38 @@ export const AskPage: React.FC<Props> = ({ initialQuery = "", onNavigateToCase }
                   <div
                     key={c.marker}
                     onClick={() => handleCitationClick(c)}
-                    className="bg-white border border-slate-200 hover:border-indigo-300 rounded-lg p-4 shadow-sm cursor-pointer transition-all hover:shadow"
+                    className="legal-card p-4.5 cursor-pointer hover:border-indigo-400 group"
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-xs font-mono font-bold bg-indigo-100 text-indigo-900 border border-indigo-300 rounded px-2 py-0.5">
                           {c.marker}
                         </span>
-                        <h4 className="text-sm font-bold text-indigo-950 hover:text-indigo-600">{c.title}</h4>
+                        <h4 className="text-sm font-bold text-indigo-950 group-hover:text-indigo-600 transition-colors">
+                          {c.title}
+                        </h4>
                       </div>
                       <div className="flex items-center space-x-2 flex-shrink-0">
                         {c.para_no && (
-                          <span className="text-xs bg-slate-100 text-slate-700 font-mono px-2 py-0.5 rounded">
+                          <span className="text-xs bg-slate-100 text-slate-700 font-mono font-bold px-2 py-0.5 rounded">
                             Para {c.para_no}
                           </span>
                         )}
-                        <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
+                        <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
                       </div>
                     </div>
 
                     <div className="flex items-center space-x-2 text-xs text-slate-500 mb-2">
-                      <span className="font-medium text-slate-700">{c.court}</span>
+                      <span className="font-semibold text-slate-700">{c.court}</span>
                       {c.neutral_citation && (
                         <>
                           <span>•</span>
-                          <span className="font-mono">{c.neutral_citation}</span>
+                          <span className="font-mono bg-slate-100 px-1.5 py-0.2 rounded text-[11px] text-slate-700">{c.neutral_citation}</span>
                         </>
                       )}
                     </div>
 
-                    <p className="text-xs text-slate-700 bg-slate-50 p-2.5 rounded border border-slate-100 font-serif leading-relaxed">
+                    <p className="text-xs text-slate-700 bg-slate-50/80 p-3 rounded-xl border border-slate-200/60 font-serif leading-relaxed">
                       &ldquo;{c.snippet}&rdquo;
                     </p>
 
