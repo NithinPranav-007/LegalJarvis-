@@ -459,18 +459,20 @@ class Feedback(Base):
     answer_id: Mapped[int] = mapped_column(
         BigInteger, ForeignKey("answers.id", ondelete="CASCADE"), nullable=False
     )
-    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=False)
-    rating: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)  # -1 or 1
+    user_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=True)
+    rating: Mapped[int | None] = mapped_column(SmallInteger, nullable=True)  # -1 or 1, or 1-5
     label: Mapped[str | None] = mapped_column(
         String, nullable=True
     )  # 'supported','unsupported','hallucinated','incomplete','wrong_law'
     comment: Mapped[str | None] = mapped_column(Text, nullable=True)
+    reviewer_role: Mapped[str | None] = mapped_column(String, nullable=True)
+    claims_json: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
     __table_args__ = (
-        CheckConstraint("rating IN (-1, 1)", name="ck_feedback_rating"),
+        CheckConstraint("rating IN (-1, 1, 2, 3, 4, 5)", name="ck_feedback_rating"),
         CheckConstraint(
             "label IS NULL OR label IN ('supported','unsupported','hallucinated','incomplete','wrong_law')",
             name="ck_feedback_label",

@@ -4,6 +4,7 @@ import { LegalDisclaimer } from "./components/LegalDisclaimer";
 import { AskPage } from "./pages/Ask";
 import { CaseViewerPage } from "./pages/CaseViewer";
 import { HistoryPage } from "./pages/History";
+import { ReviewerPage } from "./pages/Reviewer";
 import { SearchPage } from "./pages/Search";
 
 export const App: React.FC = () => {
@@ -54,6 +55,10 @@ export const App: React.FC = () => {
 
           {activeTab === "history" && (
             <HistoryPage onReAsk={handleReAsk} />
+          )}
+
+          {activeTab === "reviewer" && (
+            <ReviewerPage />
           )}
         </main>
       </div>

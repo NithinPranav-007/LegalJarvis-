@@ -1,14 +1,20 @@
-"""Feedback API router (Task T-14 / FR-14)."""
+"""Feedback and Reviewer Labelling API router (Task T-14, T-18 / FR-14)."""
 
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.api.search import get_sync_db
-from app.db.models import Answer, Feedback
-from app.schemas.feedback import FeedbackCreate, FeedbackResponse
+from app.api.auth import get_optional_current_user, require_role
+from app.db.models import Answer, Feedback, User
+from app.db.session import get_sync_db
+from app.schemas.feedback import (
+    FeedbackCreate,
+    FeedbackExportItem,
+    FeedbackResponse,
+    ReviewerFeedbackCreate,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,15 +25,17 @@ router = APIRouter(prefix="/v1/feedback", tags=["Feedback"])
 def submit_feedback(
     payload: FeedbackCreate,
     db: Session = Depends(get_sync_db),
+    current_user: User | None = Depends(get_optional_current_user),
 ) -> FeedbackResponse:
-    """Record user feedback (thumbs up/down, quality labels, comments) for legal Q&A."""
+    """Record citizen or researcher feedback (thumbs up/down, quality labels, comments) for legal Q&A."""
     logger.info(
-        "User feedback received: rating=%s label=%s query=%s answer_id=%s notes=%s",
+        "User feedback received: rating=%s label=%s query=%s answer_id=%s notes=%s user_id=%s",
         payload.rating,
         payload.label,
         payload.query,
         payload.answer_id,
         payload.notes,
+        current_user.id if current_user else None,
     )
 
     feedback_id = 1
@@ -37,9 +45,10 @@ def submit_feedback(
         if ans is not None:
             fb = Feedback(
                 answer_id=payload.answer_id,
+                user_id=current_user.id if current_user else None,
                 rating=payload.rating,
                 label=payload.label,
-                notes=payload.notes,
+                comment=payload.notes,
             )
             db.add(fb)
             db.commit()
@@ -51,3 +60,87 @@ def submit_feedback(
         status="success",
         message="Feedback successfully recorded. Thank you for helping improve LegalJarvis.",
     )
+
+
+@router.post("/reviewer", response_model=FeedbackResponse, status_code=status.HTTP_201_CREATED)
+def submit_reviewer_feedback(
+    payload: ReviewerFeedbackCreate,
+    db: Session = Depends(get_sync_db),
+    reviewer: User = Depends(require_role("reviewer", "admin")),
+) -> FeedbackResponse:
+    """Record legal reviewer expert annotations with per-claim support verification and critique."""
+    ans = db.execute(select(Answer).where(Answer.id == payload.answer_id)).scalar_one_or_none()
+    if not ans:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Answer with ID {payload.answer_id} not found",
+        )
+
+    claims_data = [c.model_dump() for c in payload.claims]
+
+    fb = Feedback(
+        answer_id=payload.answer_id,
+        user_id=reviewer.id,
+        rating=payload.rating,
+        label=payload.overall_label,
+        comment=payload.legal_accuracy_notes,
+        reviewer_role=payload.reviewer_role or reviewer.role,
+        claims_json={"claims": claims_data},
+    )
+    db.add(fb)
+    db.commit()
+    db.refresh(fb)
+
+    logger.info(
+        "Reviewer label recorded: answer_id=%d reviewer_id=%d label=%s rating=%d claims_count=%d",
+        payload.answer_id,
+        reviewer.id,
+        payload.overall_label,
+        payload.rating,
+        len(claims_data),
+    )
+
+    return FeedbackResponse(
+        id=fb.id,
+        status="success",
+        message="Reviewer annotation successfully recorded into gold evaluation corpus.",
+    )
+
+
+@router.get("/export", response_model=list[FeedbackExportItem])
+def export_feedback(
+    db: Session = Depends(get_sync_db),
+    reviewer_only: bool = Query(default=False, description="Filter strictly for reviewer expert labels"),
+    reviewer: User = Depends(require_role("reviewer", "admin")),
+) -> list[FeedbackExportItem]:
+    """Export labelled feedback data in standard benchmark format for error analysis and gold set building."""
+    stmt = select(Feedback).order_by(Feedback.id.desc())
+    if reviewer_only:
+        stmt = stmt.where(Feedback.reviewer_role.is_not(None))
+
+    rows = db.execute(stmt).scalars().all()
+    results: list[FeedbackExportItem] = []
+
+    for r in rows:
+        claims = []
+        if r.claims_json and isinstance(r.claims_json, dict):
+            claims = r.claims_json.get("claims", [])
+        elif isinstance(r.claims_json, list):
+            claims = r.claims_json
+
+        results.append(
+            FeedbackExportItem(
+                id=r.id,
+                answer_id=r.answer_id,
+                user_id=r.user_id,
+                rating=r.rating,
+                label=r.label,
+                comment=r.comment,
+                reviewer_role=r.reviewer_role,
+                claims_json=claims,
+                created_at=r.created_at.isoformat() if r.created_at else "",
+            )
+        )
+
+    logger.info("Feedback exported: total_items=%d reviewer_id=%d", len(results), reviewer.id)
+    return results

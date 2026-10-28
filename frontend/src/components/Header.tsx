@@ -1,7 +1,7 @@
 import React from "react";
 import { Scale, MessageSquareText, Search, BookOpen, History as HistoryIcon, ShieldCheck } from "lucide-react";
 
-export type NavTab = "ask" | "search" | "case" | "history";
+export type NavTab = "ask" | "search" | "case" | "history" | "reviewer";
 
 interface Props {
   activeTab: NavTab;
@@ -78,6 +78,18 @@ export const Header: React.FC<Props> = ({ activeTab, onSelectTab, userRole = "re
           >
             <HistoryIcon className="h-3.5 w-3.5" />
             <span>History</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onSelectTab("reviewer")}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md transition-colors ${
+              activeTab === "reviewer"
+                ? "bg-white text-indigo-700 shadow-sm font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/60"
+            }`}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            <span>Reviewer</span>
           </button>
         </nav>
 
