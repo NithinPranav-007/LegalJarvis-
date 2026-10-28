@@ -1,6 +1,7 @@
 # Data and models (strictly never commit datasets, dumps, or model weights)
 data/
 models/
+backups/
 *.tar
 *.tar.gz
 *.parquet
