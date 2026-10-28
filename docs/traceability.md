@@ -24,15 +24,15 @@ Status values:
 | **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/documents.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/app.spec.ts` (T-FR07), `frontend/tests/unit/CaseViewer.test.tsx`, `backend/tests/api/test_documents_and_feedback.py` | implemented |
 | **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | implemented |
 | **FR-09** | Structured summarisation | P1 | `backend/app/summarize/`, `prompts/summary_v1.txt` | `backend/tests/unit/test_summarize.py` (T-FR09) | implemented |
-| **FR-10** | Conversational follow-ups | P1 | `backend/app/qa/query_analysis.py` | `backend/tests/unit/test_followup.py` | not started |
-| **FR-11** | Multi-document comparison | P2 | `backend/app/api/compare.py`, `frontend/src/pages/Compare.tsx` | `backend/tests/api/test_compare.py` | not started |
-| **FR-12** | Filters and metadata faceting | P0 | `backend/app/retrieval/filters.py`, `backend/app/api/search.py` | `backend/tests/api/test_search_facets.py` | not started |
+| **FR-10** | Conversational follow-ups | P1 | `backend/app/qa/query_analysis.py` | `backend/tests/unit/test_followup.py` | roadmap (v1.1) |
+| **FR-11** | Multi-document comparison | P2 | `backend/app/api/compare.py`, `frontend/src/pages/Compare.tsx` | `backend/tests/api/test_compare.py` | roadmap (v1.2) |
+| **FR-12** | Filters and metadata faceting | P0 | `backend/app/retrieval/filters.py`, `backend/app/api/search.py` | `backend/tests/api/test_search.py` | implemented |
 | **FR-13** | Statute lookup, versioning, IPC/BNS notice | P1 | `backend/app/statutes/` (`loader.py`, `versions.py`, `concordance.py`, `references.py`), `api/statutes.py` | `backend/tests/unit/test_statutes.py` (T-FR13) | implemented |
 | **FR-14** | User and reviewer feedback capture | P1 | `backend/app/api/feedback.py`, `backend/app/eval/gold_import.py`, `frontend/src/components/FeedbackWidget.tsx`, `frontend/src/pages/Reviewer.tsx` | `backend/tests/api/test_documents_and_feedback.py` (T-FR14), `backend/tests/eval/test_gold_protocol.py` (T-18), `frontend/tests/unit/HistoryAndFeedback.test.tsx` | implemented |
 | **FR-15** | Authentication and RBAC | P1 | `backend/app/api/auth.py`, `backend/app/core/security.py` | `backend/tests/api/test_auth.py` (T-FR15) | implemented |
 | **FR-16** | Evaluation harness and dashboard | P0 | `backend/app/eval/` (`runner.py`, `qa_runner.py`, `metrics.py`, `datasets.py`, `gold_import.py`) | `backend/tests/integration/test_eval.py` (T-FR16), `backend/tests/eval/test_gold_protocol.py` (T-18, T-19) | implemented |
 | **FR-17** | Safety and legal-advice guardrails | P0 | `backend/app/qa/guardrails.py`, `backend/app/qa/orchestrator.py`, `prompts/qa_v1.txt` | `backend/tests/security/test_guardrails.py` | implemented |
-| **FR-18** | Audit logging | P1 | `backend/app/core/logging.py`, `backend/app/qa/orchestrator.py` | `backend/tests/unit/test_audit_logging.py` | not started |
+| **FR-18** | Audit logging | P1 | `backend/app/core/logging.py`, `backend/app/qa/orchestrator.py` | `backend/tests/unit/test_audit_logging.py` | implemented |
 
 ---
 

@@ -1,5 +1,7 @@
 """Search API router (Task T-07 / FR-04)."""
 
+from typing import Any
+
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
@@ -65,3 +67,11 @@ def search_cases(
         results=items,
         attribution=ATTRIBUTION_TEXT,
     )
+
+
+@router.get("/search/facets")
+def get_facets(db: Session = Depends(get_sync_db)) -> dict[str, Any]:
+    """Retrieve metadata facets (courts, document counts) per FR-12."""
+    from app.retrieval.filters import get_available_courts
+    courts = get_available_courts(db)
+    return {"courts": courts}

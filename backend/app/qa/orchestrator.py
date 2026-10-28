@@ -7,6 +7,7 @@ from pathlib import Path
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.core.logging import log_audit_event
 from app.llm.gateway import LLMGateway, get_llm_gateway
 from app.qa.context_builder import build_qa_context
 from app.qa.guardrails import check_input_guardrails
@@ -233,6 +234,15 @@ class QAOrchestrator:
                         attribution=item.attribution,
                     )
                 )
+
+        # Audit logging (FR-18)
+        log_audit_event(
+            event_type="qa_query",
+            query=clean_q,
+            retrieval_chunk_ids=[c.chunk_id for c in active_citations],
+            model_identifier=self._gateway.provider_name,
+            verification_outcome="verified",
+        )
 
         return QAResponse(
             question=clean_q,
