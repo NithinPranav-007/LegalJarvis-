@@ -50,11 +50,18 @@ class LexicalBoostReranker(BaseReranker):
             token_matches = sum(1 for t in q_tokens if t in text)
             exact_match_bonus = 1.0 if q_lower in text else 0.0
 
+            # Title and citation boosts
+            title_lower = item.title.lower()
+            title_match_bonus = 0.5 if any(t in title_lower for t in q_tokens if len(t) > 3) else 0.0
+            citation_match_bonus = 1.0 if (item.neutral_citation and item.neutral_citation.lower() in q_lower) else 0.0
+
             # Combined score: normalized base score + lexical boosts
             boosted_score = (
-                item.score * 0.5
+                item.score * 0.4
                 + (token_matches / max(1, len(q_tokens))) * 0.3
-                + exact_match_bonus * 0.2
+                + exact_match_bonus * 0.1
+                + title_match_bonus * 0.1
+                + citation_match_bonus * 0.1
             )
 
             reranked_item = SearchResultItem(

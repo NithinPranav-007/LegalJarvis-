@@ -138,3 +138,4 @@ python -m pytest backend/tests -q
 - The `min_supported_fraction` threshold was **strictly maintained at 0.60**.
 - The `overlap_threshold` was **strictly maintained at 0.25**.
 - Genuine lack of evidence reliably triggers abstention without hallucinations or fabricated legal passages.
+

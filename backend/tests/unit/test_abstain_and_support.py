@@ -141,3 +141,4 @@ class TestCitationVerificationAndAbstention:
         # The unsupported sentence must be pruned from verified_answer
         assert "space law" not in res.verified_answer
         assert "Article 21 protects personal liberty" in res.verified_answer
+

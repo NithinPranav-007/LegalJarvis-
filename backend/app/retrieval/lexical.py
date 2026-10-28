@@ -153,7 +153,8 @@ def search_lexical_db(
         if not rows:
             return []
 
-        corpus = [chunk.text for chunk, _, _ in rows]
+        # Index chunk text together with document title and citation for complete lexical coverage
+        corpus = [f"{d.title or ''} {d.neutral_citation or ''} {chunk.text}" for chunk, d, _ in rows]
         tokenized_corpus = [re.findall(r"\w+", doc_text.lower()) for doc_text in corpus]
         tokenized_query = re.findall(r"\w+", query.lower())
 
@@ -170,7 +171,13 @@ def search_lexical_db(
             overlap = len(query_set.intersection(doc_tokens))
             if overlap > 0:
                 chunk, doc, court = rows[i]
-                scored_candidates.append((float(score), chunk, doc, court))
+                final_score = float(score)
+                # Boost if document title or citation matches query terms
+                if doc.title and any(t in doc.title.lower() for t in query_set if len(t) > 3):
+                    final_score += 2.0
+                if doc.neutral_citation and doc.neutral_citation.lower() in query.lower():
+                    final_score += 5.0
+                scored_candidates.append((final_score, chunk, doc, court))
 
         scored_candidates.sort(key=lambda x: x[0], reverse=True)
         paginated = scored_candidates[offset : offset + limit]

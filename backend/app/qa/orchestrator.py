@@ -8,10 +8,11 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.logging import log_audit_event
+from app.db.models import Document
 from app.llm.gateway import LLMGateway, get_llm_gateway
 from app.qa.context_builder import build_qa_context
 from app.qa.guardrails import check_input_guardrails
-from app.qa.query_analysis import analyze_query
+from app.qa.query_analysis import QueryAnalysisResult, analyze_query
 from app.retrieval.hybrid import search_hybrid
 from app.schemas.qa import QACitation, QAResponse
 from app.verify.abstain import verify_and_filter_answer
@@ -38,6 +39,32 @@ def load_qa_prompt_template(path: Path | str | None = None) -> str:
             "CONTEXT PASSAGES:\n{context}\n\nQUESTION:\n{question}\n\nANSWER:\n"
         )
     return p.read_text(encoding="utf-8")
+
+
+def get_matching_case_documents(db: Session, target_case_name: str) -> list[Document]:
+    """Find documents matching the target case name in the corpus."""
+    parts = re.split(r"\b(?:v\.|vs\.|versus|v)\b", target_case_name, flags=re.IGNORECASE)
+    party1 = parts[0].strip() if parts else target_case_name.strip()
+    p1_tokens = [
+        t.lower()
+        for t in re.findall(r"\b[a-zA-Z]{3,}\b", party1)
+        if t.lower() not in {"the", "and", "for", "all", "india", "state", "union"}
+    ]
+    if not p1_tokens:
+        p1_tokens = [t.lower() for t in re.findall(r"\b[a-zA-Z]{3,}\b", party1)]
+
+    docs = db.query(Document).all()
+    matching: list[Document] = []
+    for d in docs:
+        if not d.title:
+            continue
+        t_low = d.title.lower()
+        if target_case_name.lower() in t_low or t_low in target_case_name.lower():
+            matching.append(d)
+        elif p1_tokens and all(tok in t_low for tok in p1_tokens):
+            matching.append(d)
+
+    return matching
 
 
 class QAOrchestrator:
@@ -76,8 +103,31 @@ class QAOrchestrator:
                 generation_status="refused",
             )
 
-        # 1. Query Analysis (detect sections, statutes, criminal transition notice)
+        # 1. Query Analysis (detect sections, statutes, criminal transition notice, case names, years)
         analysis = analyze_query(clean_q)
+
+        # 1b. Target Case Corpus Coverage Verification (Task T-11 / FR-05)
+        # If the user specifically asks for a target case that is not in the corpus, abstain immediately.
+        # Do NOT substitute unrelated precedents (Rule 2 & 3: Never fabricate or substitute cases).
+        matching_docs: list[Document] = []
+        if analysis.target_case_name:
+            matching_docs = get_matching_case_documents(db, analysis.target_case_name)
+            if not matching_docs:
+                year_desc = f"{analysis.target_year} " if analysis.target_year else ""
+                abstention_msg = (
+                    f"The requested {year_desc}judgment in '{analysis.target_case_name}' is not present "
+                    "in the indexed Supreme Court corpus. LegalJarvis will not substitute unrelated precedents."
+                )
+                return QAResponse(
+                    question=clean_q,
+                    answer=abstention_msg,
+                    citations=[],
+                    abstained=True,
+                    abstention_reason=f"Target case '{analysis.target_case_name}' not found in indexed corpus.",
+                    criminal_transition_notice=analysis.notice_text,
+                    disclaimer=settings.LEGAL_DISCLAIMER,
+                    generation_status="abstained",
+                )
 
         # 2. Hybrid Retrieval with reranking
         hits = search_hybrid(
@@ -89,6 +139,13 @@ class QAOrchestrator:
             limit=limit,
             rerank=True,
         )
+
+        # If a specific target case was requested, filter hits strictly to the target case
+        if matching_docs:
+            matching_doc_ids = {d.id for d in matching_docs}
+            case_hits = [h for h in hits if h.document_id in matching_doc_ids]
+            if case_hits:
+                hits = case_hits
 
         # 3. Empty corpus check -> Abstain
         if not hits:
@@ -152,7 +209,6 @@ class QAOrchestrator:
             raw_answer = llm_resp.content.strip()
         except Exception as exc:
             logger.error("LLM generation failed: %s", exc)
-            # Generator down fallback
             degraded_citations = [
                 QACitation(
                     marker=marker,
@@ -193,12 +249,14 @@ class QAOrchestrator:
                 generation_status="abstained",
             )
 
-        # 9. Citation Verification & Claim Support Pruning (Task T-12 / FR-06)
+        # 9. Citation Verification & Query-Relevance Filtering (Task T-12 / FR-06)
         verification = verify_and_filter_answer(
             answer=raw_answer,
             citation_map=context.citation_map,
             overlap_threshold=0.25,
             min_supported_fraction=0.60,
+            query=clean_q,
+            query_analysis=analysis,
         )
 
         if verification.abstained:

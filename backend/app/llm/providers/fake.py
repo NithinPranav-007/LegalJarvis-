@@ -114,9 +114,26 @@ class FakeProvider(BaseLLMProvider):
         if not q_words:
             return "[INSUFFICIENT_EVIDENCE] No legal question provided."
 
+        # Check if question specifies a specific legal case name
+        from app.qa.query_analysis import extract_target_case_name
+        target_case = extract_target_case_name(question)
+
         # 2. Extract passage blocks
         ctx_match = re.search(r"CONTEXT PASSAGES:\s*(.*?)(?=\n*QUESTION:|\Z)", prompt, re.DOTALL)
         ctx_text = ctx_match.group(1).strip() if ctx_match else ""
+
+        # If a specific case was requested, ensure the context actually contains that case
+        if target_case:
+            case_tokens = [
+                t.lower()
+                for t in re.findall(r"\b[a-zA-Z]{3,}\b", target_case)
+                if t.lower() not in {"all", "india", "state", "union", "ltd", "pvt"}
+            ]
+            if case_tokens and not all(tok in ctx_text.lower() for tok in case_tokens):
+                return (
+                    f"[INSUFFICIENT_EVIDENCE] The retrieved context passages do not contain "
+                    f"the requested judgment '{target_case}'."
+                )
 
         # Matches [C1] ... Passage: <snippet>
         passage_blocks = re.findall(

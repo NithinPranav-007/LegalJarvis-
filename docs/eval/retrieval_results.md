@@ -1,7 +1,7 @@
 # Retrieval Benchmark Evaluation Results
 
-**Timestamp**: 2026-10-28T14:51:31.471236+00:00
-**Git Commit**: `874db31d96a6cf5793dd434db21bddd9d8802f50`
+**Timestamp**: 2026-10-28T15:54:57.917898+00:00
+**Git Commit**: `c8ed6cedf4cf5a2fe0ff78191ddb2074f13cc8f2`
 **Seed**: `42`
 **Benchmark**: LJ-Retrieval-Benchmark v1.0.0 (10 queries, 20 passages)
 
