@@ -86,10 +86,12 @@ class CrossEncoderReranker(BaseReranker):
     def _load_model(self) -> Any:
         if self._model is None:
             try:
-                from sentence_transformers import CrossEncoder  # type: ignore[import-not-found]
+                import importlib
 
+                st_mod = importlib.import_module("sentence_transformers")
+                cross_encoder_cls = st_mod.CrossEncoder
                 logger.info("Loading cross-encoder reranker: %s", self._model_name)
-                self._model = CrossEncoder(self._model_name)
+                self._model = cross_encoder_cls(self._model_name)
             except Exception as exc:
                 logger.warning(
                     "Failed to load CrossEncoder %s (%s); falling back to LexicalBoostReranker.",
@@ -148,11 +150,11 @@ def get_reranker(model_name: str | None = None) -> BaseReranker:
     if _CACHED_RERANKER is not None:
         return _CACHED_RERANKER
 
-    try:
-        import sentence_transformers  # noqa: F401
+    import importlib.util
 
+    if importlib.util.find_spec("sentence_transformers") is not None:
         _CACHED_RERANKER = CrossEncoderReranker(model_name=target)
-    except ImportError:
+    else:
         logger.info("sentence_transformers not installed; using LexicalBoostReranker")
         _CACHED_RERANKER = LexicalBoostReranker()
 

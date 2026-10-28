@@ -100,12 +100,12 @@ class SentenceTransformerEmbedder(BaseEmbedder):
     def _load_model(self) -> Any:
         if self._model is None:
             try:
-                from sentence_transformers import (
-                    SentenceTransformer,  # type: ignore[import-not-found,import-untyped]
-                )
+                import importlib
 
+                st_mod = importlib.import_module("sentence_transformers")
+                sentence_transformer_cls = st_mod.SentenceTransformer
                 logger.info("Loading sentence transformer model: %s", self._model_name)
-                self._model = SentenceTransformer(self._model_name)
+                self._model = sentence_transformer_cls(self._model_name)
             except Exception as exc:
                 logger.warning(
                     "Failed to load SentenceTransformer %s (%s); falling back to hash embedder.",
@@ -142,11 +142,11 @@ def get_embedder(model_name: str | None = None) -> BaseEmbedder:
         return _CACHED_EMBEDDER
 
     # Check if sentence_transformers is available
-    try:
-        import sentence_transformers  # noqa: F401
+    import importlib.util
 
+    if importlib.util.find_spec("sentence_transformers") is not None:
         _CACHED_EMBEDDER = SentenceTransformerEmbedder(model_name=target, dimension=DEFAULT_DIMENSION)
-    except ImportError:
+    else:
         logger.info("sentence_transformers not installed; using DeterministicHashEmbedder")
         _CACHED_EMBEDDER = DeterministicHashEmbedder(dimension=DEFAULT_DIMENSION)
 

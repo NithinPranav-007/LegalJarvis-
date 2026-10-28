@@ -19,7 +19,7 @@ Status values:
 | **FR-02** | Text extraction and normalisation | P0 | `backend/app/ingest/extract.py`, `backend/app/ingest/clean.py` | `backend/tests/unit/test_extract.py` (T-FR02) | implemented |
 | **FR-03** | Structure-aware segmentation | P0 | `backend/app/ingest/segment.py` | `backend/tests/unit/test_segment.py` (T-FR03 offsets test) | implemented |
 | **FR-04** | Hybrid search with filters | P0 | `backend/app/retrieval/` (`lexical.py`, `dense.py`, `fusion.py`, `rerank.py`, `hybrid.py`, `filters.py`), `api/search.py` | `backend/tests/integration/test_retrieval.py` (T-FR04), `tests/api/test_search.py` | implemented |
-| **FR-05** | Cited question answering | P0 | `backend/app/qa/` (`orchestrator.py`, `query_analysis.py`, `context_builder.py`), `prompts/qa_v1.txt`, `api/qa.py` | `backend/tests/integration/test_qa.py` (T-FR05) | not started |
+| **FR-05** | Cited question answering | P0 | `backend/app/qa/` (`orchestrator.py`, `query_analysis.py`, `context_builder.py`), `prompts/qa_v1.txt`, `api/qa.py` | `backend/tests/integration/test_qa.py` (T-FR05) | implemented |
 | **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | not started |
 | **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/cases.py`, `backend/app/api/chunks.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/viewer.spec.ts` (T-FR07) | not started |
 | **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
