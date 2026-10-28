@@ -15,7 +15,7 @@ Status values:
 
 | Requirement ID | Title | Priority | Planned Module(s) | Planned Test(s) | Status |
 |---|---|---|---|---|---|
-| **FR-01** | Corpus ingestion (SC/HC/statutes) | P0 | `backend/app/ingest/download.py`, `cli.py`, `scripts/data/` | `backend/tests/unit/test_download.py`, `backend/tests/integration/test_ingest.py` (T-FR01) | not started |
+| **FR-01** | Corpus ingestion (SC/HC/statutes) | P0 | `backend/app/ingest/download.py`, `cli.py`, `scripts/data/` | `backend/tests/integration/test_ingest.py` (T-FR01) | implemented |
 | **FR-02** | Text extraction and normalisation | P0 | `backend/app/ingest/extract.py`, `backend/app/ingest/clean.py` | `backend/tests/unit/test_extract.py` (T-FR02) | not started |
 | **FR-03** | Structure-aware segmentation | P0 | `backend/app/ingest/segment.py` | `backend/tests/unit/test_segment.py` (T-FR03 offsets test) | not started |
 | **FR-04** | Hybrid search with filters | P0 | `backend/app/retrieval/` (`lexical.py`, `dense.py`, `fusion.py`, `rerank.py`, `filters.py`), `api/search.py` | `backend/tests/integration/test_retrieval.py` (T-FR04) | not started |
@@ -48,7 +48,7 @@ Status values:
 | **NFR-SCAL** | Scalability | P1 | Incremental ingestion; single-node Postgres + pgvector scaling | `backend/app/ingest/` | `backend/tests/integration/test_ingest_incremental.py` | not started |
 | **NFR-A11Y** | Accessibility | P1 | WCAG 2.1 AA for core flows; visible focus; axe-core checks | `frontend/src/` | `frontend/tests/e2e/a11y.spec.ts` (T-NFR-A11Y) | not started |
 | **NFR-MAINT** | Maintainability | P0 | Ruff, mypy, eslint, tsc; >= 80% line coverage on core logic | Codebase standards, CI | `make lint && make test` | in progress |
-| **NFR-FAULT** | Fault Tolerance | P0 | Resumable ingestion; all ingestion stages idempotent | `backend/app/ingest/` | `backend/tests/integration/test_ingest_idempotency.py` | not started |
+| **NFR-FAULT** | Fault Tolerance | P0 | Resumable ingestion; all ingestion stages idempotent | `backend/app/ingest/` | `backend/tests/integration/test_ingest.py` | implemented |
 | **NFR-INTEG** | Data Integrity | P0 | Full provenance: chunk -> document -> raw file -> sha256 -> snapshot | `backend/app/db/models.py`, `backend/app/ingest/` | `backend/tests/db/test_models.py` | in progress |
 | **NFR-LOG** | Logging & Metrics | P1 | Structured JSON logs; request IDs; `/metrics` in Prometheus format | `backend/app/core/logging.py`, `backend/app/api/metrics.py` | `backend/tests/api/test_metrics.py` | not started |
 | **NFR-DEP** | Deployment & Recovery | P0 | Clean reproduction from README; smoke test; backup/restore | `docker-compose.yml`, `scripts/ops/` | `scripts/ops/smoke.sh`, `scripts/ops/backup.sh`, `scripts/ops/restore.sh` | not started |
