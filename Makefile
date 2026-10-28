@@ -40,6 +40,9 @@ eval:
 eval-retrieval:
 	$(PYTHON) -m app.eval.runner --config configs/experiment.yaml
 
+eval-qa:
+	$(PYTHON) -m app.eval.qa_runner --runs 3 --config configs/experiment.yaml
+
 llm-ping:
 	$(PYTHON) -m app.llm.gateway
 
