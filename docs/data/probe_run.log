@@ -1,0 +1,29 @@
+Starting LegalJarvis Dataset Probe (Task T-02)...
+
+=== PROBING DATASET DS-1: Indian Supreme Court Judgments (Year 2023) ===
+english.tar size: 382.33 MB (400906240 bytes)
+metadata.index.json: file_count=856, total_size=5.42 MB
+Downloading metadata.parquet...
+metadata.parquet: 856 rows, columns: ['title', 'petitioner', 'respondent', 'description', 'judge', 'author_judge', 'citation', 'case_id', 'cnr', 'decision_date', 'disposal_nature', 'court', 'available_languages', 'raw_html', 'path', 'nc_display', 'scraped_at', 'year']
+Testing 5 sample PDFs from english.tar...
+  [1] 2023_7_322_346_EN.pdf: 25 pages, text_layer=True (1905 chars)
+  [2] 2023_16_888_916_EN.pdf: 29 pages, text_layer=True (1893 chars)
+  [3] 2023_7_26_84_EN.pdf: 59 pages, text_layer=True (2076 chars)
+  [4] 2023_2_312_325_EN.pdf: 14 pages, text_layer=True (2085 chars)
+  [5] 2023_16_1535_1546_EN.pdf: 12 pages, text_layer=True (1900 chars)
+
+=== PROBING DATASET DS-2: Indian High Court Judgments ===
+High Court top-level prefixes: ['data/', 'metadata/']
+High Court data subprefixes: ['data/pdf/', 'data/tar/']
+
+=== PROBING BENCHMARK DS-3: IL-TUR Benchmark ===
+IL-TUR Leaderboard site status: 200
+InLegalBERT model on HF: id=law-ai/InLegalBERT
+
+=== PROBING DATASET DS-4: India Code Central Acts ===
+India Code status: blocked: The read operation timed out
+
+Wrote probe report to: D:\Final year project\legaljarvis\docs\data\dataset_probe_report.md
+Wrote dataset cards to docs/data/cards/
+
+Dataset Probe Complete! All observed data saved.
