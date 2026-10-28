@@ -8,6 +8,9 @@ backups/
 *.dump
 *.sql
 *.sql.gz
+*.db
+*.sqlite
+*.sqlite3
 
 # Environment and secrets
 .env
