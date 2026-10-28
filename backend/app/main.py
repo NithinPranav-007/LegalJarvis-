@@ -9,6 +9,7 @@ from app.api.feedback import router as feedback_router
 from app.api.qa import router as qa_router
 from app.api.search import router as search_router
 from app.api.statutes import router as statutes_router
+from app.api.summarize import router as summarize_router
 from app.core.config import settings
 
 app = FastAPI(
@@ -33,6 +34,7 @@ app.include_router(qa_router)
 app.include_router(documents_router)
 app.include_router(feedback_router)
 app.include_router(statutes_router)
+app.include_router(summarize_router)
 
 
 @app.get("/health", tags=["System"])

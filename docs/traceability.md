@@ -23,7 +23,7 @@ Status values:
 | **FR-06** | Citation verification and abstention | P0 | `backend/app/verify/` (`existence.py`, `support.py`, `abstain.py`), `prompts/judge_v1.txt` | `backend/tests/unit/test_verify.py` (T-FR06 seeded failures) | implemented |
 | **FR-07** | Document viewer with source highlighting | P0 | `backend/app/api/documents.py`, `frontend/src/pages/CaseViewer.tsx` | `frontend/tests/e2e/app.spec.ts` (T-FR07), `frontend/tests/unit/CaseViewer.test.tsx`, `backend/tests/api/test_documents_and_feedback.py` | implemented |
 | **FR-08** | Upload and analyse user documents | P1 | `backend/app/api/documents.py`, `backend/app/db/models.py` (RLS), `frontend/src/pages/MyDocuments.tsx` | `backend/tests/security/test_isolation.py` (T-FR08) | not started |
-| **FR-09** | Structured summarisation | P1 | `backend/app/summarize/`, `prompts/summary_v1.txt` | `backend/tests/unit/test_summarize.py` (T-FR09) | not started |
+| **FR-09** | Structured summarisation | P1 | `backend/app/summarize/`, `prompts/summary_v1.txt` | `backend/tests/unit/test_summarize.py` (T-FR09) | implemented |
 | **FR-10** | Conversational follow-ups | P1 | `backend/app/qa/query_analysis.py` | `backend/tests/unit/test_followup.py` | not started |
 | **FR-11** | Multi-document comparison | P2 | `backend/app/api/compare.py`, `frontend/src/pages/Compare.tsx` | `backend/tests/api/test_compare.py` | not started |
 | **FR-12** | Filters and metadata faceting | P0 | `backend/app/retrieval/filters.py`, `backend/app/api/search.py` | `backend/tests/api/test_search_facets.py` | not started |

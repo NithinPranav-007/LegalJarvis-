@@ -59,6 +59,11 @@ class LLMGateway:
             return True
         return bool(self._api_key and len(self._api_key.strip()) > 5)
 
+    @property
+    def is_available(self) -> bool:
+        """Alias for checking provider availability."""
+        return self.has_credentials
+
     def get_provider(self) -> BaseLLMProvider:
         """Instantiate or return cached provider instance."""
         if self._provider_instance is not None:
