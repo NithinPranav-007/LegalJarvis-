@@ -33,6 +33,8 @@ class LLMGateway:
         )
         self._api_key: str = str(
             api_key
+            or getattr(settings, "LLM_API_KEY", "")
+            or getattr(settings, "GEMINI_API_KEY", "")
             or os.getenv("LLM_API_KEY")
             or os.getenv("OPENAI_API_KEY")
             or os.getenv("GEMINI_API_KEY")

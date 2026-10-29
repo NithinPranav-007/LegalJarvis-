@@ -21,8 +21,8 @@ class GeminiProvider(BaseLLMProvider):
     def __init__(
         self,
         api_key: str,
-        model_name: str = "gemini-1.5-flash",
-        timeout_seconds: float = 30.0,
+        model_name: str = "gemini-3.5-flash",
+        timeout_seconds: float = 60.0,
         max_retries: int = 3,
     ):
         if not api_key:
