@@ -1,21 +1,21 @@
 @echo off
-title LegalJarvis Launcher
+title Needhi Launcher
 echo ======================================================================
-echo                  Starting LegalJarvis Project
+echo                  Starting Needhi (LegalJarvis) Project
 echo ======================================================================
 echo.
 
 echo [1/2] Starting FastAPI Backend Daemon on http://localhost:8000 ...
-start "LegalJarvis Backend (Port 8000)" cmd /k "cd /d "%~dp0" && uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000"
+start "Needhi Backend (Port 8000)" cmd /k "cd /d "%~dp0" && uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000"
 
 timeout /t 3 /nobreak >nul
 
 echo [2/2] Starting React + Vite Frontend UI on http://localhost:5173 ...
-start "LegalJarvis Frontend (Port 5173)" cmd /k "cd /d "%~dp0frontend" && npm run dev -- --host 127.0.0.1 --port 5173"
+start "Needhi Frontend (Port 5173)" cmd /k "cd /d "%~dp0frontend" && npm run dev -- --host 127.0.0.1 --port 5173"
 
 echo.
 echo ======================================================================
-echo    LegalJarvis is now fully running!
+echo    Needhi is now fully running!
 echo.
 echo    Frontend Application:   http://localhost:5173
 echo    Backend Swagger Docs:   http://localhost:8000/docs
