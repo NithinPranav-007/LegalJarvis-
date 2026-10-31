@@ -1,19 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  BookOpen,
   Calendar,
-  Scale,
-  Award,
   Users,
-  ShieldAlert,
+  Search,
+  Copy,
+  Check,
+  Bookmark,
+  SlidersHorizontal,
+  RotateCcw,
 } from "lucide-react";
 import { api } from "../api/client";
+import { SupremeCourt3DCanvas } from "../components/SupremeCourt3DCanvas";
+import { RightAuthoritiesPanel } from "../components/RightAuthoritiesPanel";
 import { DocumentDetail } from "../types";
 
 interface Props {
   documentId?: number;
   highlightParaNo?: number | null;
   onSelectDocument?: (id: number) => void;
+  onAskAboutCase?: (query: string) => void;
 }
 
 export const CaseViewerPage: React.FC<Props> = ({
@@ -25,13 +30,18 @@ export const CaseViewerPage: React.FC<Props> = ({
   const [doc, setDoc] = useState<DocumentDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [availableDocs, setAvailableDocs] = useState<Array<{ id: number; title: string; court_code: string; neutral_citation: string | null }>>([]);
+  const [availableDocs, setAvailableDocs] = useState<
+    Array<{ id: number; title: string; court_code: string; neutral_citation: string | null }>
+  >([]);
   const [selectedSegmentFilter, setSelectedSegmentFilter] = useState<string>("all");
   const [activeHighlightPara, setActiveHighlightPara] = useState<number | null>(highlightParaNo);
+  const [jumpParaInput, setJumpParaInput] = useState<string>("");
+  const [inDocFilter, setInDocFilter] = useState<string>("");
+  const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [savedDoc, setSavedDoc] = useState<boolean>(false);
 
   const paraRefs = useRef<{ [paraNo: number]: HTMLElement | null }>({});
 
-  // Sync prop changes
   useEffect(() => {
     if (documentId && documentId !== currentDocId) {
       setCurrentDocId(documentId);
@@ -44,26 +54,28 @@ export const CaseViewerPage: React.FC<Props> = ({
     }
   }, [highlightParaNo]);
 
-  // Load document list for selector
   useEffect(() => {
     let isMounted = true;
-    api.listDocuments(20).then((docs) => {
-      if (isMounted && docs && docs.length > 0) {
-        setAvailableDocs(docs);
-      }
-    }).catch(() => {});
+    api
+      .listDocuments(30)
+      .then((docs) => {
+        if (isMounted && docs && docs.length > 0) {
+          setAvailableDocs(docs);
+        }
+      })
+      .catch(() => {});
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // Fetch document details
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
     setError(null);
 
-    api.getDocument(currentDocId)
+    api
+      .getDocument(currentDocId)
       .then((data) => {
         if (isMounted) {
           setDoc(data);
@@ -82,7 +94,6 @@ export const CaseViewerPage: React.FC<Props> = ({
     };
   }, [currentDocId]);
 
-  // Auto-scroll to active highlighted paragraph
   useEffect(() => {
     if (!loading && doc && activeHighlightPara !== null) {
       const el = paraRefs.current[activeHighlightPara];
@@ -100,241 +111,323 @@ export const CaseViewerPage: React.FC<Props> = ({
     }
   };
 
-  const filteredChunks = doc?.chunks.filter((c) => {
-    if (selectedSegmentFilter === "all") return true;
-    return c.segment_type?.toLowerCase() === selectedSegmentFilter.toLowerCase();
-  }) || [];
+  const handleJumpToPara = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pNum = parseInt(jumpParaInput, 10);
+    if (!isNaN(pNum)) {
+      setActiveHighlightPara(pNum);
+      const el = paraRefs.current[pNum];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+  };
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(label);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
+
+  const filteredChunks =
+    doc?.chunks.filter((c) => {
+      if (inDocFilter.trim()) {
+        return c.text.toLowerCase().includes(inDocFilter.toLowerCase());
+      }
+      return true;
+    }) || [];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* Top Header & Document Picker */}
-      <div className="bg-white border border-slate-200 rounded-xl p-4 mb-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-700">
-            <BookOpen className="h-5 w-5" />
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-6 font-sans">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* Left Column: Case Navigator & Scope Sidebar */}
+        <aside
+          className="w-full lg:w-64 shrink-0 space-y-6 text-[#090d16]"
+          aria-label="Case Navigator"
+        >
+          <div className="flex items-center justify-between pb-2.5 border-b-2 border-slate-300">
+            <h2 className="text-lg font-serif font-black text-[#071e17] tracking-tight">
+              Case Navigator
+            </h2>
+            <SlidersHorizontal className="h-4 w-4 text-[#071e17] stroke-[2.5]" />
           </div>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">Indian Case Law Reader</h2>
-            <p className="text-xs text-slate-500">Official Supreme Court judgment text with paragraph anchors</p>
-          </div>
-        </div>
 
-        {/* Case selector dropdown */}
-        <div className="flex items-center space-x-2">
-          <label htmlFor="case-select" className="text-xs font-semibold text-slate-700 whitespace-nowrap">
-            Select Judgment:
-          </label>
-          <select
-            id="case-select"
-            value={currentDocId}
-            onChange={(e) => handleDocChange(Number(e.target.value))}
-            className="text-xs border border-slate-300 rounded-lg px-3 py-1.5 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600 max-w-xs truncate"
-          >
-            {availableDocs.length > 0 ? (
-              availableDocs.map((d) => (
+          {/* Select Judgment */}
+          <div className="space-y-2.5">
+            <label className="block text-xs font-black text-[#071e17] uppercase tracking-wider">
+              Select Judgment
+            </label>
+            <select
+              value={currentDocId}
+              onChange={(e) => handleDocChange(Number(e.target.value))}
+              className="w-full bg-white border-2 border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-black text-[#090d16] focus:outline-none focus:ring-2 focus:ring-[#0f2c24] shadow-xs"
+            >
+              {availableDocs.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.title} {d.neutral_citation ? `(${d.neutral_citation})` : ""}
+                  {d.title} ({d.neutral_citation || `Doc #${d.id}`})
                 </option>
-              ))
-            ) : (
-              <option value={currentDocId}>Judgment #{currentDocId}</option>
-            )}
-          </select>
-        </div>
-      </div>
-
-      {/* Loading state */}
-      {loading && (
-        <div role="status" className="p-16 text-center bg-white rounded-xl border border-slate-200 shadow-sm space-y-3">
-          <div className="animate-spin h-8 w-8 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto" />
-          <p className="text-sm text-slate-600 font-medium">Loading judgment transcript and paragraph chunks...</p>
-        </div>
-      )}
-
-      {/* Error state */}
-      {error && !loading && (
-        <div role="alert" className="p-6 bg-red-50 border border-red-200 rounded-xl text-red-900 flex items-start space-x-3">
-          <ShieldAlert className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="text-sm font-bold text-red-800">Unable to Display Judgment</h4>
-            <p className="text-xs text-red-700 mt-1">{error}</p>
+              ))}
+              {availableDocs.length === 0 && (
+                <option value={currentDocId}>
+                  {doc?.title || `Judgment #${currentDocId}`}
+                </option>
+              )}
+            </select>
           </div>
-        </div>
-      )}
 
-      {/* Content Layout: 2 Columns (Main Text + Metadata Sidebar) */}
-      {doc && !loading && (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Judgment Reader Area (3 cols) */}
-          <main className="lg:col-span-3 space-y-4">
-            {/* Case Title Bar */}
-            <section className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="text-xs uppercase font-bold tracking-wider px-2.5 py-0.5 bg-indigo-50 text-indigo-700 rounded-full border border-indigo-100">
-                  {doc.court_name || "Supreme Court of India"}
+          {/* Jump to Paragraph */}
+          <form onSubmit={handleJumpToPara} className="space-y-2.5">
+            <label className="block text-xs font-black text-[#071e17] uppercase tracking-wider">
+              Jump to Paragraph
+            </label>
+            <div className="flex space-x-2">
+              <input
+                type="number"
+                min="1"
+                placeholder="Para (e.g. 12)"
+                value={jumpParaInput}
+                onChange={(e) => setJumpParaInput(e.target.value)}
+                className="w-full bg-white border-2 border-slate-300 rounded-xl px-3.5 py-2 text-sm font-bold text-[#090d16] placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0f2c24] shadow-2xs"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-[#071e17] hover:bg-[#0f2c24] text-white rounded-xl text-xs font-black transition-colors shadow-xs"
+              >
+                Go
+              </button>
+            </div>
+          </form>
+
+          {/* Filter Text Within Judgment */}
+          <div className="space-y-2.5">
+            <label className="block text-xs font-black text-[#071e17] uppercase tracking-wider">
+              Find in Text
+            </label>
+            <div className="relative">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-700 stroke-[2.5]" />
+              <input
+                type="text"
+                placeholder="Filter keywords..."
+                value={inDocFilter}
+                onChange={(e) => setInDocFilter(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-white border-2 border-slate-300 rounded-xl text-sm font-bold text-[#090d16] placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0f2c24] shadow-2xs"
+              />
+            </div>
+          </div>
+
+          {/* Structural Segment Filters */}
+          <div className="space-y-2.5">
+            <label className="block text-xs font-black text-[#071e17] uppercase tracking-wider">
+              Judgment Sections
+            </label>
+            <div className="space-y-1.5">
+              {[
+                { id: "all", label: "All Paragraphs" },
+                { id: "headnotes", label: "Headnotes & Summary" },
+                { id: "facts", label: "Statement of Facts" },
+                { id: "issues", label: "Legal Issues Framed" },
+                { id: "ratio", label: "Ratio Decidendi" },
+                { id: "order", label: "Operative Order" },
+              ].map((seg) => (
+                <button
+                  key={seg.id}
+                  type="button"
+                  onClick={() => setSelectedSegmentFilter(seg.id)}
+                  className={`w-full text-left px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-colors ${
+                    selectedSegmentFilter === seg.id
+                      ? "bg-[#071e17] text-white font-black shadow-xs"
+                      : "text-slate-800 hover:bg-slate-200/70"
+                  }`}
+                >
+                  {seg.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Reset Filters */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedSegmentFilter("all");
+                setInDocFilter("");
+                setActiveHighlightPara(null);
+                setJumpParaInput("");
+              }}
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-[#faeae1] hover:bg-[#f5ddcc] text-[#78350f] text-xs font-black border-2 border-[#f3d3be] transition-all hover:scale-105 shadow-xs"
+            >
+              <RotateCcw className="h-4 w-4 stroke-[2.5]" />
+              <span>Reset Navigator</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Center Column: Judgment Reader */}
+        <div className="flex-1 min-w-0 max-w-3xl space-y-6">
+          {/* Case Header Card with 3D Canvas */}
+          <div className="bg-[#edf2ec] border border-[#c2d4c0] rounded-2xl p-6 shadow-sm flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden">
+            <div className="flex-1 max-w-xl z-10 space-y-2.5">
+              <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
+                <span className="bg-[#dcfce7] text-[#14532d] border border-[#86efac] px-3 py-1 rounded-full shadow-3xs">
+                  {doc?.court_name || "Supreme Court of India"}
                 </span>
-                {doc.neutral_citation && (
-                  <span className="text-xs font-mono font-semibold px-2.5 py-0.5 bg-slate-100 text-slate-800 rounded-full">
+                {doc?.neutral_citation && (
+                  <span className="bg-[#ffedd5] text-[#78350f] border border-[#fdba74] px-3 py-1 rounded-full font-mono shadow-3xs">
                     {doc.neutral_citation}
                   </span>
                 )}
-                {doc.decision_date && (
-                  <span className="text-xs text-slate-500 flex items-center space-x-1">
-                    <Calendar className="h-3.5 w-3.5" />
+                {doc?.decision_date && (
+                  <span className="text-slate-700 flex items-center gap-1 font-medium">
+                    <Calendar className="h-3.5 w-3.5 text-slate-500" />
                     <span>{doc.decision_date}</span>
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-snug">{doc.title}</h1>
-            </section>
 
-            {/* Filter by segment type */}
-            <div className="flex items-center space-x-2 bg-slate-50 p-2 rounded-lg border border-slate-200 text-xs overflow-x-auto">
-              <span className="font-semibold text-slate-700 ml-1">Filter Segments:</span>
-              {(["all", "facts", "arguments", "reasoning", "holding"] as const).map((seg) => (
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-[#071e17] tracking-tight leading-snug">
+                {doc?.title || "Loading judgment record..."}
+              </h2>
+
+              {doc?.bench && (
+                <p className="text-xs sm:text-sm text-slate-700 flex items-center space-x-2 pt-0.5 font-medium">
+                  <Users className="h-3.5 w-3.5 text-slate-500" />
+                  <span>Coram / Bench: <b className="text-slate-900 font-bold">{doc.bench}</b></span>
+                </p>
+              )}
+
+              {/* Actions Toolbar */}
+              <div className="pt-1.5 flex flex-wrap items-center gap-2 text-xs">
+                {doc?.neutral_citation && (
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(doc.neutral_citation!, "citation")}
+                    className="flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold transition-all hover:scale-105 shadow-3xs"
+                  >
+                    {copiedText === "citation" ? <Check className="h-3.5 w-3.5 text-[#15803d]" /> : <Copy className="h-3.5 w-3.5 text-slate-500" />}
+                    <span>{copiedText === "citation" ? "Citation Copied" : "Copy Official Citation"}</span>
+                  </button>
+                )}
+
                 <button
-                  key={seg}
                   type="button"
-                  onClick={() => setSelectedSegmentFilter(seg)}
-                  className={`px-2.5 py-1 rounded-md capitalize transition-colors font-medium ${
-                    selectedSegmentFilter === seg
-                      ? "bg-indigo-600 text-white shadow-xs"
-                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                  onClick={() => setSavedDoc(!savedDoc)}
+                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-xl border transition-all hover:scale-105 shadow-3xs ${
+                    savedDoc
+                      ? "bg-[#faeae1] text-[#78350f] border-[#f3d3be] font-bold"
+                      : "bg-white hover:bg-slate-50 text-slate-800 border-slate-300 font-semibold"
                   }`}
                 >
-                  {seg}
+                  <Bookmark className={`h-3.5 w-3.5 ${savedDoc ? "fill-amber-600 text-amber-600" : "text-slate-500"}`} />
+                  <span>{savedDoc ? "Saved in Precedents" : "Save Precedent"}</span>
                 </button>
-              ))}
+              </div>
             </div>
 
-            {/* Paragraphs List */}
-            <div className="space-y-3" role="feed" aria-label="Judgment Paragraphs">
-              {filteredChunks.length === 0 ? (
-                <div className="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-500 text-sm">
-                  No paragraphs match the selected segment filter.
-                </div>
-              ) : (
-                filteredChunks.map((chunk) => {
+            <div className="shrink-0 flex items-center justify-center z-10">
+              <SupremeCourt3DCanvas className="w-60 h-40" />
+            </div>
+          </div>
+
+          {/* Loading or Error States */}
+          {loading && (
+            <div className="bg-white border-2 border-slate-300 rounded-2xl p-12 text-center text-sm font-bold text-slate-600 shadow-sm">
+              Loading judgment paragraphs and paragraph-level index...
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-rose-50 border-2 border-rose-300 text-rose-950 font-bold rounded-2xl p-4 text-sm">
+              {error}
+            </div>
+          )}
+
+          {/* Judgment Text Paragraph Stream with 3D Cards */}
+          {!loading && doc && (
+            <div className="bg-white border-2 border-slate-300 rounded-2xl p-6 shadow-sm space-y-6">
+              <div className="flex items-center justify-between pb-3 border-b-2 border-slate-100 text-xs font-black text-slate-700">
+                <span>Total Paragraphs: <b className="text-[#071e17]">{doc.chunks.length}</b></span>
+                {activeHighlightPara !== null && (
+                  <span className="text-[#78350f] bg-[#faeae1] border border-[#f3d3be] px-3 py-1 rounded-md">
+                    Focused on ¶ {activeHighlightPara}
+                  </span>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                {filteredChunks.map((chunk) => {
                   const isHighlighted = activeHighlightPara === chunk.para_no;
                   return (
                     <article
                       key={chunk.id}
-                      id={chunk.para_no ? `para-${chunk.para_no}` : undefined}
                       ref={(el) => {
-                        if (chunk.para_no) {
-                          paraRefs.current[chunk.para_no] = el;
-                        }
+                        if (chunk.para_no) paraRefs.current[chunk.para_no] = el;
                       }}
-                      className={`bg-white rounded-xl p-5 border transition-all ${
+                      className={`p-5 rounded-2xl transition-all ${
                         isHighlighted
-                          ? "border-amber-400 bg-amber-50/60 ring-2 ring-amber-400 shadow-md"
-                          : "border-slate-200 shadow-xs hover:border-slate-300"
+                          ? "bg-amber-50/90 border-2 border-amber-400 ring-2 ring-amber-300/40 shadow-md"
+                          : "bg-white border-2 border-slate-200/90 hover:border-slate-400 shadow-2xs"
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-slate-100">
+                      <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-100">
                         <div className="flex items-center space-x-2">
-                          {chunk.para_no ? (
-                            <span
-                              className={`text-xs font-mono font-bold px-2 py-0.5 rounded ${
-                                isHighlighted
-                                  ? "bg-amber-500 text-white"
-                                  : "bg-slate-100 text-slate-700"
-                              }`}
-                            >
-                              ¶ {chunk.para_no}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-slate-400 font-mono">Unnumbered</span>
-                          )}
-                          {isHighlighted && (
-                            <span className="text-[11px] font-bold text-amber-800 uppercase tracking-wider bg-amber-200/70 px-2 py-0.5 rounded">
-                              Cited Paragraph
-                            </span>
-                          )}
+                          <span
+                            className={`font-mono font-black text-xs px-2.5 py-1 rounded shadow-2xs ${
+                              isHighlighted
+                                ? "bg-amber-300 text-amber-950 border border-amber-500"
+                                : "bg-slate-100 text-slate-900 border border-slate-300"
+                            }`}
+                          >
+                            ¶ {chunk.para_no || "?"}
+                          </span>
                         </div>
 
-                        {chunk.segment_type && (
-                          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-100">
-                            {chunk.segment_type}
-                          </span>
-                        )}
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(chunk.text, `para-${chunk.para_no}`)}
+                          className="flex items-center space-x-1 text-xs font-bold text-slate-500 hover:text-slate-950"
+                        >
+                          {copiedText === `para-${chunk.para_no}` ? (
+                            <Check className="h-3.5 w-3.5 text-emerald-600 stroke-[2.5]" />
+                          ) : (
+                            <Copy className="h-3.5 w-3.5 stroke-[2]" />
+                          )}
+                          <span>Copy Passage</span>
+                        </button>
                       </div>
 
-                      <p className="text-slate-800 text-sm md:text-base font-serif leading-relaxed whitespace-pre-line">
+                      <p className="text-base font-sans font-medium text-slate-950 leading-relaxed whitespace-pre-line">
                         {chunk.text}
                       </p>
                     </article>
                   );
-                })
-              )}
-            </div>
-          </main>
-
-          {/* Right Sidebar: Metadata & Provenance (1 col) */}
-          <aside className="space-y-4">
-            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-4">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 border-b border-slate-100 pb-2">
-                Judgment Metadata
-              </h3>
-
-              <div className="space-y-3 text-xs">
-                <div>
-                  <span className="text-slate-500 block">Court</span>
-                  <span className="font-semibold text-slate-900 flex items-center space-x-1.5 mt-0.5">
-                    <Scale className="h-3.5 w-3.5 text-indigo-600" />
-                    <span>{doc.court_name || doc.court_code}</span>
-                  </span>
-                </div>
-
-                {doc.neutral_citation && (
-                  <div>
-                    <span className="text-slate-500 block">Neutral Citation</span>
-                    <span className="font-mono font-semibold text-indigo-900 block mt-0.5">
-                      {doc.neutral_citation}
-                    </span>
-                  </div>
-                )}
-
-                {doc.decision_date && (
-                  <div>
-                    <span className="text-slate-500 block">Decision Date</span>
-                    <span className="font-semibold text-slate-900 block mt-0.5">{doc.decision_date}</span>
-                  </div>
-                )}
-
-                {doc.bench && (
-                  <div>
-                    <span className="text-slate-500 block">Coram / Bench</span>
-                    <span className="font-medium text-slate-800 flex items-start space-x-1 mt-0.5">
-                      <Users className="h-3.5 w-3.5 text-slate-400 flex-shrink-0 mt-0.5" />
-                      <span>{doc.bench}</span>
-                    </span>
-                  </div>
-                )}
-
-                <div>
-                  <span className="text-slate-500 block">Total Paragraphs</span>
-                  <span className="font-semibold text-slate-900 block mt-0.5">
-                    {doc.chunks?.length || 0} chunks indexed
-                  </span>
-                </div>
+                })}
               </div>
             </div>
-
-            {/* Attribution & Provenance Card */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm text-xs text-slate-600 space-y-2">
-              <div className="flex items-center space-x-1.5 font-semibold text-slate-800">
-                <Award className="h-4 w-4 text-indigo-600" />
-                <span>Dataset Attribution</span>
-              </div>
-              <p className="leading-relaxed">{doc.attribution}</p>
-              <div className="pt-2 border-t border-slate-200 text-[11px] text-slate-500">
-                Source: Registry of Open Data on AWS &amp; Supreme Court of India SCR.
-              </div>
-            </div>
-          </aside>
+          )}
         </div>
-      )}
+
+        {/* Right Column: Authorities Panel */}
+        <RightAuthoritiesPanel
+          authorities={doc?.chunks.slice(0, 3).map((c, i) => ({
+            id: `case-auth-${i}`,
+            marker: `[P${c.para_no || i + 1}]`,
+            paraNo: c.para_no || (10 + i * 2),
+            title: doc.title,
+            court: doc.court_name || "Supreme Court of India",
+            citation: doc.neutral_citation || "INSC",
+            quote: c.text.slice(0, 180) + "...",
+            documentId: doc.id,
+          }))}
+          onOpenCase={(_dId, pNo) => {
+            if (pNo) {
+              setActiveHighlightPara(pNo);
+              const el = paraRefs.current[pNo];
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

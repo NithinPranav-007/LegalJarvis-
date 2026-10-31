@@ -14,5 +14,5 @@ async def test_health_endpoint() -> None:
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
-        assert "LegalJarvis" in data["app"]
+        assert "Needhi" in data["app"] or "LegalJarvis" in data["app"]
         assert "disclaimer" in data

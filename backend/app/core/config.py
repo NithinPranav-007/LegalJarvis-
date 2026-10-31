@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "LegalJarvis"
+    APP_NAME: str = "Needhi"
     APP_ENV: str = "development"
     DEBUG: bool = False
 
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     # Legal Disclaimer (Mandatory per PRD FR-17 / D12)
     LEGAL_DISCLAIMER: str = (
-        "LegalJarvis provides automated legal research and informational analysis based on public "
+        "Needhi provides automated legal research and informational analysis based on public "
         "court judgments and statutory texts. It does not provide legal advice or create an attorney-client "
         "relationship. Always verify citations and consult a qualified advocate for legal representation."
     )

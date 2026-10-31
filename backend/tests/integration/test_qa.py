@@ -115,7 +115,7 @@ def test_qa_grounded_answer_with_citations(qa_db: Session) -> None:
     assert cit.para_no == 14
     assert cit.chunk_id == 1
     assert "Dattam Labs" in cit.attribution
-    assert "LegalJarvis provides automated legal research" in resp.disclaimer
+    assert "provides automated legal research" in resp.disclaimer
 
 
 def test_qa_low_evidence_abstention(qa_db: Session) -> None:

@@ -117,3 +117,4 @@ Actual Output:
 - **Corpus Coverage**: *All India Judges Association v. Union of India* (2023) is genuinely absent from the local seed corpus. Per AGENTS.md Rule 2 and Rule 3, no fake documents or synthetic case text were created.
 - **Threshold Integrity**: The $0.60$ minimum supported claim fraction and $0.25$ directional token overlap thresholds remain strictly intact.
 - **Precedent Substitution Prevention**: Irrelevant legal passages are strictly rejected, ensuring high-fidelity legal research assistance.
+

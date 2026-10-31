@@ -126,3 +126,112 @@ export interface HistoryItem {
   citationsCount: number;
   criminalNotice?: string | null;
 }
+
+// ==========================================
+// Petition Generator Types (Task T-19)
+// ==========================================
+
+export type PetitionType =
+  | "writ_petition"
+  | "bail_application"
+  | "pil"
+  | "civil_petition"
+  | "criminal_revision"
+  | "custom_petition";
+
+export interface PartyInput {
+  name: string;
+  age?: string;
+  relation?: string;
+  address: string;
+  role: string;
+  phone?: string;
+  email?: string;
+  advocate_name?: string;
+  advocate_bar_id?: string;
+}
+
+export interface EventInput {
+  date: string;
+  description: string;
+}
+
+export interface PreviousOrderInput {
+  court: string;
+  date: string;
+  summary: string;
+}
+
+export interface AnnexureInput {
+  mark: string;
+  title: string;
+  description?: string;
+}
+
+export interface PetitionFormData {
+  petition_type: PetitionType;
+  court_level: "supreme_court" | "high_court" | "district_court";
+  court_name: string;
+  state_ut?: string;
+  category: "constitutional" | "criminal" | "civil" | "special_leave";
+  case_number?: string;
+  statutory_provisions?: string;
+  petitioners: PartyInput[];
+  respondents: PartyInput[];
+  dispute_background: string;
+  events: EventInput[];
+  previous_orders: PreviousOrderInput[];
+  annexures: AnnexureInput[];
+  grounds: string[];
+  rights_infringed: string[];
+  statutes_applied: string[];
+  urgency_reason?: string;
+  limitation_explanation?: string;
+  main_prayers: string[];
+  interim_prayers: string[];
+}
+
+export interface PetitionCitation {
+  marker: string; // e.g. "[C1]"
+  chunk_id?: number | null;
+  document_id?: number | null;
+  title: string;
+  court: string;
+  neutral_citation?: string | null;
+  para_no?: number | null;
+  snippet: string;
+  support_status: "verified" | "requires_verification";
+  is_binding: boolean;
+  relevance_explanation: string;
+}
+
+export interface PetitionResponse {
+  id?: number | null;
+  title: string;
+  petition_type: PetitionType;
+  court_level: string;
+  court_name: string;
+  state_ut?: string | null;
+  category: string;
+  case_number?: string | null;
+  sections: Record<string, string>;
+  full_text: string;
+  citations: PetitionCitation[];
+  verification_warnings: string[];
+  status: "draft" | "generated" | "reviewed";
+  created_at?: string | null;
+  updated_at?: string | null;
+  disclaimer: string;
+}
+
+export interface PetitionDraftListItem {
+  id: number;
+  title: string;
+  petition_type: string;
+  court_name: string;
+  petitioner_name: string;
+  respondent_name: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}

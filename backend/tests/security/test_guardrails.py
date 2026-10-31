@@ -29,7 +29,7 @@ def test_guardrails_refuse_adversarial_queries(prompt: str, expected_reason: str
     result = check_input_guardrails(prompt)
     assert result.is_safe is False
     assert result.reason == expected_reason
-    assert "LegalJarvis is an automated legal research" in result.refusal_message
+    assert "Needhi is an automated legal research" in result.refusal_message or "LegalJarvis is an automated legal research" in result.refusal_message
     assert "Bar Council of India" in result.refusal_message
 
 

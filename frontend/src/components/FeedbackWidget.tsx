@@ -60,7 +60,7 @@ export const FeedbackWidget: React.FC<Props> = ({ query, answerId }) => {
     return (
       <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg flex items-center space-x-2 text-xs font-medium">
         <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-        <span>Thank you for your feedback! Your evaluation helps refine LegalJarvis verification.</span>
+        <span>Thank you for your feedback! Your evaluation helps refine Needhi verification.</span>
       </div>
     );
   }

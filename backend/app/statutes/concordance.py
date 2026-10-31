@@ -171,7 +171,7 @@ def lookup_concordance(
             "replacing_provision": None,
             "message": (
                 f"No verified concordance mapping has been officially certified by a legal reviewer "
-                f"for {clean_code} Section {clean_sec}. Under Rule 3, LegalJarvis does not guess or invent mappings."
+                f"for {clean_code} Section {clean_sec}. Under Rule 3, Needhi does not guess or invent mappings."
             ),
         }
 

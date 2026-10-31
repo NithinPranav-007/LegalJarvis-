@@ -538,3 +538,36 @@ class EvalResult(Base):
     output: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
     run: Mapped["EvalRun"] = relationship(back_populates="results")
+
+
+class Petition(Base):
+    __tablename__ = "petitions"
+
+    id: Mapped[int] = mapped_column(PK_BIGINT, primary_key=True, autoincrement=True)
+    user_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("users.id"), nullable=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    petition_type: Mapped[str] = mapped_column(String, nullable=False)  # 'writ_petition', 'bail_application', 'pil', etc.
+    court_level: Mapped[str] = mapped_column(String, nullable=False)    # 'supreme_court', 'high_court', 'district_court'
+    court_name: Mapped[str] = mapped_column(String, nullable=False)
+    state_ut: Mapped[str | None] = mapped_column(String, nullable=True)
+    category: Mapped[str] = mapped_column(String, nullable=False, default="constitutional")
+    case_number: Mapped[str | None] = mapped_column(String, nullable=True)
+    statutory_provisions: Mapped[str | None] = mapped_column(Text, nullable=True)
+    petitioner_details: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)
+    respondent_details: Mapped[list[dict[str, Any]]] = mapped_column(JSON, nullable=False, default=list)
+    facts_chronology: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    legal_grounds: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    prayer_relief: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+    generated_document: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    citations: Mapped[list[dict[str, Any]] | None] = mapped_column(JSON, nullable=True)
+    verification_warnings: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
+    status: Mapped[str] = mapped_column(String, nullable=False, default="draft")  # 'draft', 'generated', 'reviewed'
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now()
+    )
+
+    user: Mapped["User | None"] = relationship()
+

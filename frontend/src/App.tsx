@@ -6,9 +6,15 @@ import { CaseViewerPage } from "./pages/CaseViewer";
 import { HistoryPage } from "./pages/History";
 import { ReviewerPage } from "./pages/Reviewer";
 import { SearchPage } from "./pages/Search";
+import { PetitionGeneratorPage } from "./pages/PetitionGenerator";
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<NavTab>("ask");
+  const [activeTab, setActiveTab] = useState<NavTab>(() => {
+    if (window.location.pathname.includes("petition") || window.location.hash.includes("petition")) {
+      return "petition";
+    }
+    return "ask";
+  });
   const [selectedDocId, setSelectedDocId] = useState<number>(1);
   const [highlightParaNo, setHighlightParaNo] = useState<number | null>(null);
   const [askQuery, setAskQuery] = useState<string>("");
@@ -25,7 +31,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col justify-between">
+    <div className="min-h-screen bg-[#f5f6f4] text-slate-900 font-sans flex flex-col justify-between selection:bg-[#e6f4ea] selection:text-[#14532d]">
       <div>
         <Header activeTab={activeTab} onSelectTab={setActiveTab} />
 
@@ -39,7 +45,10 @@ export const App: React.FC = () => {
           )}
 
           {activeTab === "search" && (
-            <SearchPage onNavigateToCase={navigateToCase} />
+            <SearchPage
+              onNavigateToCase={navigateToCase}
+              onAskAboutCase={handleReAsk}
+            />
           )}
 
           {activeTab === "case" && (
@@ -50,6 +59,7 @@ export const App: React.FC = () => {
                 setSelectedDocId(id);
                 setHighlightParaNo(null);
               }}
+              onAskAboutCase={handleReAsk}
             />
           )}
 
@@ -60,19 +70,23 @@ export const App: React.FC = () => {
           {activeTab === "reviewer" && (
             <ReviewerPage />
           )}
+
+          {activeTab === "petition" && (
+            <PetitionGeneratorPage onNavigateToCase={navigateToCase} />
+          )}
         </main>
       </div>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 bg-white py-6 mt-12 text-slate-500 text-xs">
-        <div className="max-w-6xl mx-auto px-4 space-y-4">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 space-y-4">
           <LegalDisclaimer />
           <div className="flex flex-col sm:flex-row items-center justify-between pt-2 border-t border-slate-100 text-[11px] gap-2">
             <span>
-              LegalJarvis AI &copy; {new Date().getFullYear()} — Grounded Supreme Court of India Research System.
+              Needhi AI &copy; {new Date().getFullYear()} — Citation-Verified Indian Law Intelligence System.
             </span>
             <span>
-              Open Government Data (OGD) / Creative Commons Attribution (CC-BY 4.0).
+              Supreme Court Precedent Corpus (Dattam Labs / Open Data) • Creative Commons Attribution (CC-BY 4.0).
             </span>
           </div>
         </div>

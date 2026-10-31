@@ -34,7 +34,7 @@ PROHIBITED_PATTERNS = [
 ]
 
 BAR_COUNCIL_DISCLAIMER_REFUSAL = (
-    "LegalJarvis is an automated legal research and precedent retrieval assistant, not a licensed advocate. "
+    "Needhi is an automated legal research and precedent retrieval assistant, not a licensed advocate. "
     "Under Bar Council of India rules and the Advocates Act, 1961, tailored legal advice, case strategy, or "
     "litigation assistance can only be provided by an advocate enrolled with a State Bar Council. "
     "Please consult an advocate for specific legal counsel."

@@ -14,6 +14,9 @@ backups/
 
 # Environment and secrets
 .env
+**/.env
+**/.env.*
+!**/.env.example
 *.pem
 *.key
 *.cert
@@ -69,5 +72,8 @@ playwright/.cache/
 Thumbs.db
 desktop.ini
 
-# Evaluation run logs
-eval_runs/*.json
+# Evaluation run logs and test outputs
+eval_runs/
+**/eval_runs/
+backend/eval_runs/
+backend/docs/

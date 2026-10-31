@@ -128,7 +128,10 @@ def test_concordance_import_and_rule_3_enforcement(statute_db: Session) -> None:
     assert (
         "No verified concordance mapping has been officially certified" in res_unmapped["message"]
     )
-    assert "LegalJarvis does not guess or invent mappings" in res_unmapped["message"]
+    assert (
+        "Needhi does not guess or invent mappings" in res_unmapped["message"]
+        or "LegalJarvis does not guess or invent mappings" in res_unmapped["message"]
+    )
 
     # 4. Rejection when section does not exist
     with pytest.raises(ValueError, match="does not exist"):

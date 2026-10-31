@@ -31,15 +31,17 @@ class LLMGateway:
         self._model_name: str = str(
             model_name or getattr(settings, "LLM_MODEL", "gpt-4o-mini") or "gpt-4o-mini"
         )
-        self._api_key: str = str(
-            api_key
-            or getattr(settings, "LLM_API_KEY", "")
-            or getattr(settings, "GEMINI_API_KEY", "")
-            or os.getenv("LLM_API_KEY")
-            or os.getenv("OPENAI_API_KEY")
-            or os.getenv("GEMINI_API_KEY")
-            or ""
-        )
+        if api_key is not None:
+            self._api_key = str(api_key)
+        else:
+            self._api_key = str(
+                getattr(settings, "LLM_API_KEY", "")
+                or getattr(settings, "GEMINI_API_KEY", "")
+                or os.getenv("LLM_API_KEY")
+                or os.getenv("OPENAI_API_KEY")
+                or os.getenv("GEMINI_API_KEY")
+                or ""
+            )
         self._base_url: str = str(
             base_url
             or getattr(settings, "LLM_BASE_URL", "https://api.openai.com/v1")

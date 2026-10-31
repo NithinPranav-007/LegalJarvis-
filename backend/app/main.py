@@ -1,4 +1,4 @@
-"""FastAPI application entrypoint for LegalJarvis."""
+"""FastAPI application entrypoint for Needhi."""
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +10,7 @@ from app.api.qa import router as qa_router
 from app.api.search import router as search_router
 from app.api.statutes import router as statutes_router
 from app.api.summarize import router as summarize_router
+from app.api.petitions import router as petitions_router
 from app.core.config import settings
 
 app = FastAPI(
@@ -35,6 +36,7 @@ app.include_router(documents_router)
 app.include_router(feedback_router)
 app.include_router(statutes_router)
 app.include_router(summarize_router)
+app.include_router(petitions_router)
 
 
 @app.get("/health", tags=["System"])

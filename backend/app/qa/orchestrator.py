@@ -32,7 +32,7 @@ def load_qa_prompt_template(path: Path | str | None = None) -> str:
     if not p.exists():
         # Fallback inline template if file cannot be read
         return (
-            "You are LegalJarvis, a citation-verified legal research assistant.\n"
+            "You are Needhi, a citation-verified legal research assistant.\n"
             "Answer using ONLY the numbered passages below.\n"
             "Cite passages using [C1], [C2].\n"
             "If evidence is insufficient, output [INSUFFICIENT_EVIDENCE].\n\n"
@@ -116,7 +116,7 @@ class QAOrchestrator:
                 year_desc = f"{analysis.target_year} " if analysis.target_year else ""
                 abstention_msg = (
                     f"The requested {year_desc}judgment in '{analysis.target_case_name}' is not present "
-                    "in the indexed Supreme Court corpus. LegalJarvis will not substitute unrelated precedents."
+                    "in the indexed Supreme Court corpus. Needhi will not substitute unrelated precedents."
                 )
                 return QAResponse(
                     question=clean_q,
@@ -203,7 +203,7 @@ class QAOrchestrator:
         try:
             llm_resp = self._gateway.generate(
                 prompt=prompt,
-                system_prompt="You are LegalJarvis, a citation-verified legal research assistant for Indian law.",
+                system_prompt="You are Needhi, a citation-verified legal research assistant for Indian law.",
                 temperature=0.0,
             )
             raw_answer = llm_resp.content.strip()
