@@ -108,6 +108,25 @@ class GeminiProvider(BaseLLMProvider):
                         completion_tokens=usage.get("candidatesTokenCount", 0),
                         latency_ms=round(latency_ms, 2),
                     )
+                except (httpx.ConnectError, httpx.TimeoutException, httpx.NetworkError) as exc:
+                    last_exc = exc
+                    logger.warning(
+                        "Gemini connection attempt %d/%d failed (%s: %s). Retrying...",
+                        attempt + 1,
+                        self._max_retries,
+                        type(exc).__name__,
+                        exc,
+                    )
+                    time.sleep(1.0 * (attempt + 1))
+                except (httpx.ConnectError, httpx.TimeoutException, httpx.NetworkError) as exc:
+                    last_exc = exc
+                    logger.warning(
+                        "Gemini async connection attempt %d/%d failed (%s: %s).",
+                        _attempt + 1,
+                        self._max_retries,
+                        type(exc).__name__,
+                        exc,
+                    )
                 except httpx.HTTPError as exc:
                     last_exc = exc
                     time.sleep((2**attempt) * 0.5)
@@ -150,6 +169,15 @@ class GeminiProvider(BaseLLMProvider):
                         prompt_tokens=usage.get("promptTokenCount", 0),
                         completion_tokens=usage.get("candidatesTokenCount", 0),
                         latency_ms=round(latency_ms, 2),
+                    )
+                except (httpx.ConnectError, httpx.TimeoutException, httpx.NetworkError) as exc:
+                    last_exc = exc
+                    logger.warning(
+                        "Gemini async connection attempt %d/%d failed (%s: %s).",
+                        _attempt + 1,
+                        self._max_retries,
+                        type(exc).__name__,
+                        exc,
                     )
                 except httpx.HTTPError as exc:
                     last_exc = exc
